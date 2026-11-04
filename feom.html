@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FEOM Takip</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#0b0f17;--card:rgba(255,255,255,.05);--tx:#e6edf6;--mu:#8b98ab;--c:#22d3ee;--ok:#22c55e;--wa:#f59e0b;--er:#ef4444;--pu:#a78bfa}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 600px at 20% -10%,#12304a55,transparent),var(--bg);color:var(--tx);font:14px system-ui,Segoe UI,sans-serif;min-height:100vh}
+.card{background:var(--card);backdrop-filter:blur(12px);border:1px solid color-mix(in srgb,var(--c) 27%,transparent);border-radius:14px;padding:16px;box-shadow:0 0 18px color-mix(in srgb,var(--c) 13%,transparent),0 8px 20px #0008;transition:.2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 0 26px color-mix(in srgb,var(--c) 27%,transparent),0 14px 26px #000a}
+input,select,button{font:inherit;color:var(--tx);background:#0e1522;border:1px solid #2a3a52;border-radius:8px;padding:8px 10px}
+button{cursor:pointer;background:linear-gradient(#17314a,#0f2236);border-color:color-mix(in srgb,var(--c) 40%,transparent);transition:.15s}button:hover{transform:translateY(-2px);box-shadow:0 0 12px color-mix(in srgb,var(--c) 40%,transparent)}
+.r{border-color:var(--er)}.wrap{max-width:1300px;margin:auto;padding:14px}.center{max-width:380px;margin:12vh auto}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}.bar .sp{flex:1}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:7px 8px;border-bottom:1px solid #223;text-align:left;vertical-align:top}th{color:var(--mu);position:sticky;top:0;background:#0d1420}
+.led{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid;box-shadow:0 0 8px currentColor}
+.gelen{color:var(--ok)}.bekleyen{color:var(--wa)}.iptal{color:var(--mu)}.eksik{color:var(--er)}
+.tabs button.on{border-color:var(--c);box-shadow:0 0 12px var(--c)}.warn{color:var(--er);font-weight:800;font-size:16px}
+.tw{overflow-x:auto;max-height:68vh}.ph{display:flex;gap:8px;flex-wrap:wrap}.ph img{height:110px;border-radius:8px;border:1px solid color-mix(in srgb,var(--c) 33%,transparent)}
+#rep{background:#fff;color:#000;padding:12px;border-radius:8px;overflow-x:auto}.mu{color:var(--mu)}
+
+.vb::after{content:"WEB";font-size:11px;font-weight:700;padding:2px 8px;border:1px solid var(--c);color:var(--c);border-radius:99px;box-shadow:0 0 10px var(--c)}
+@media(max-width:768px){
+:root{--c:#fb923c;--bg:#140b05}
+body{background:radial-gradient(600px 320px at 80% -10%,#7c2d1255,transparent),var(--bg);padding-bottom:78px;font-size:15px}
+.vb::after{content:"MOBİL"}.wrap{padding:8px}
+#tabs{position:fixed;left:0;right:0;bottom:0;z-index:9;margin:0;padding:6px;gap:4px;flex-wrap:nowrap;background:#1a0f08f0;backdrop-filter:blur(10px);border-top:1px solid var(--c);box-shadow:0 -4px 18px color-mix(in srgb,var(--c) 40%,transparent)}
+#tabs button{flex:1;padding:12px 2px;font-size:12px}
+table,tbody,tr,td{display:block;width:100%}thead,tr:has(th){display:none}
+tr{border:1px solid color-mix(in srgb,var(--c) 40%,transparent);border-radius:14px;margin:10px 0;padding:8px;background:rgba(255,255,255,.04);box-shadow:0 0 12px color-mix(in srgb,var(--c) 25%,transparent)}
+td{border:0;padding:4px 2px;display:flex;justify-content:space-between;gap:10px;text-align:right}
+td::before{content:attr(data-l);color:var(--mu);font-size:12px;text-align:left}
+.tw{max-height:none;overflow:visible;padding:0;border:0;background:none;box-shadow:none}
+button,select,input{min-height:44px}.bar input,.bar select{flex:1}
+}
+</style></head><body>
+<div id="app" class="wrap"></div>
+<script>
+// ====== AYAR: Supabase > Project Settings > API ======
+const SUPABASE_URL='BURAYA_PROJECT_URL', SUPABASE_KEY='BURAYA_ANON_PUBLIC_KEY', WORKER_URL='BURAYA_WORKER_ADRESI'; // sonunda / olmasın
+// =====================================================
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=s=>document.querySelector(s), A=$('#app');
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let me=null,tab='siparis',data=[],mats=[];
+const W=()=>['kurucu','admin','editor'].includes(me?.role), K=()=>me?.role==='kurucu';
+
+// ---------- OTURUM ----------
+sb.auth.onAuthStateChange(async(ev)=>{
+  if(ev==='PASSWORD_RECOVERY'){const p=prompt('Yeni şifrenizi yazın (en az 6 karakter):');if(p){const {error}=await sb.auth.updateUser({password:p});alert(error?error.message:'Şifre güncellendi.')}}
+});
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session)return authView();
+  const {data:p}=await sb.from('profiles').select('*').eq('id',session.user.id).single();
+  me=p;
+  if(!p||p.status==='pending')return msgView('⏳ Üyeliğiniz Onay Bekliyor','Yönetici onayladığında sistemi açabileceksiniz.');
+  if(p.status==='rejected')return msgView('⛔ Üyeliğiniz Reddedildi','Lütfen yöneticiyle iletişime geçin.');
+  appView();
+}
+function msgView(t,m){A.innerHTML=`<div class="card center"><h2>${t}</h2><p class="mu">${m}</p><button onclick="out()">Çıkış</button> <button onclick="boot()">Yenile</button></div>`}
+async function out(){await sb.auth.signOut();boot()}
+function authView(reg){
+  A.innerHTML=`<div class="card center"><h2>FEOM Takip Sistemi</h2>
+  ${reg?'<input id="n" placeholder="Ad Soyad" style="width:100%;margin:4px 0">':''}
+  <input id="e" type="email" placeholder="E-posta" style="width:100%;margin:4px 0">
+  <input id="p" type="password" placeholder="Şifre" style="width:100%;margin:4px 0">
+  <button style="width:100%;margin:6px 0" id="go">${reg?'Kayıt Ol':'Giriş Yap'}</button>
+  <a href="#" id="sw" class="mu">${reg?'Girişe dön':'Kayıt ol'}</a> · <a href="#" id="fg" class="mu">Şifremi unuttum</a><p id="m" class="warn"></p></div>`;
+  $('#sw').onclick=e=>{e.preventDefault();authView(!reg)};
+  $('#fg').onclick=async e=>{e.preventDefault();const em=$('#e').value;if(!em)return $('#m').textContent='E-posta yazın';
+    const {error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.href.split('#')[0]});$('#m').textContent=error?error.message:'Sıfırlama bağlantısı e-postanıza gönderildi.'};
+  $('#go').onclick=async()=>{const em=$('#e').value,pw=$('#p').value;
+    const r=reg?await sb.auth.signUp({email:em,password:pw,options:{data:{full_name:$('#n').value}}}):await sb.auth.signInWithPassword({email:em,password:pw});
+    if(r.error)return $('#m').textContent=r.error.message; boot()};
+}
+
+// ---------- ANA EKRAN ----------
+function appView(){
+  A.innerHTML=`<div class="bar"><h2 style="margin:0">FEOM Takip</h2><span class="vb"></span><span class="mu">${esc(me.full_name||me.email)} · ${me.role}</span><span class="sp"></span>
+  <span class="tabs bar" id="tabs"></span><button onclick="out()">Çıkış</button></div><div id="main"></div>`;
+  const T=[['siparis','Siparişler'],['hizmet','Hizmetler'],['katalog','Malzeme Kataloğu'],['rapor','Güncel Rapor']];
+  if(['kurucu','admin'].includes(me.role))T.push(['yonet','Üyeler']);
+  $('#tabs').innerHTML=T.map(([k,v])=>`<button class="${k===tab?'on':''}" onclick="tab='${k}';appView()">${v}</button>`).join('');
+  ({siparis:listView,hizmet:listView,katalog:catView,rapor:repView,yonet:usersView})[tab]();
+}
+
+// ---------- LİSTE ----------
+async function listView(){
+  const m=$('#main');m.innerHTML='Yükleniyor…';
+  const {data:d,error}=await sb.from('orders').select('*').eq('tip',tab).order('talep_tarihi',{ascending:false}).limit(5000);
+  if(error)return m.innerHTML=`<p class="warn">${error.message}</p>`; data=d;
+  m.innerHTML=`<div class="bar"><input id="q" placeholder="Ara (KM, talep no, tanım…)" style="min-width:240px">
+  <select id="f"><option value="">Tüm durumlar</option><option>bekleyen</option><option>gelen</option><option>iptal</option><option>eksik</option></select>
+  <span class="sp"></span>${W()?'<button onclick="$(\'#fx\').click()">📥 Excel İçe Aktar</button><input id="fx" type="file" accept=".xls,.xlsx" multiple hidden>':''}
+  <button onclick="exp()">📤 Excel'e Aktar</button>${K()?'<button class="r" onclick="wipe()">🗑 Listeyi Temizle</button>':''}</div>
+  <div class="card tw"><table><thead><tr><th></th><th>Talep No</th><th>KM Kodu</th><th>Tanım</th><th>Miktar</th><th>Masraf Mrk.</th><th>Tarih</th>${tab==='hizmet'?'<th>Seri No</th>':''}<th>Durum</th><th></th></tr></thead><tbody id="tb"></tbody></table></div><p class="mu" id="cnt"></p>`;
+  $('#q').oninput=$('#f').onchange=draw; if(W())$('#fx').onchange=e=>imp(e.target.files); draw();
+}
+const eks=r=>r.tip==='hizmet'&&(!r.km_kodu||!r.seri_no);
+function view(){const q=($('#q').value||'').toLowerCase(),f=$('#f').value;
+  return data.filter(r=>(!f||r.durum===f)&&(!q||[r.talep_no,r.km_kodu,r.tanim,r.tanim2,r.kullanim].join(' ').toLowerCase().includes(q)))}
+function draw(){const v=view();$('#cnt').textContent=v.length+' kayıt';
+  $('#tb').innerHTML=v.slice(0,800).map(r=>`<tr><td>${eks(r)?'<span class="warn" title="KM Kodu / Seri No eksik">!</span>':''}</td><td>${esc(r.talep_no)}</td><td>${esc(r.km_kodu)}</td>
+  <td>${esc(r.tanim)}<br><span class="mu">${esc(r.kullanim)}</span></td><td>${r.miktar??''}</td><td>${esc(r.masraf_merkezi)}</td><td>${r.talep_tarihi||''}</td>
+  ${tab==='hizmet'?`<td>${W()?`<a href="#" onclick="seri(${r.id});return false">${esc(r.seri_no)||'+ ekle'}</a>`:esc(r.seri_no)}</td>`:''}
+  <td>${W()?`<select onchange="setD(${r.id},this.value)">${['bekleyen','gelen','iptal','eksik'].map(x=>`<option ${x===r.durum?'selected':''}>${x}</option>`).join('')}</select>`:''} <span class="led ${r.durum}">${r.durum}</span></td>
+  <td>${K()?`<button class="r" onclick="del(${r.id})">✕</button>`:''}</td></tr>`).join('')}
+async function setD(id,v){const {error}=await sb.from('orders').update({durum:v}).eq('id',id);if(error)alert(error.message);else{data.find(r=>r.id===id).durum=v;draw()}}
+async function seri(id){const r=data.find(x=>x.id===id),v=prompt('Seri No:',r.seri_no||'');if(v===null)return;
+  const {error}=await sb.from('orders').update({seri_no:v}).eq('id',id);if(error)alert(error.message);else{r.seri_no=v;draw()}}
+async function del(id){if(!confirm('Bu kayıt silinsin mi?'))return;const {error}=await sb.from('orders').delete().eq('id',id);error?alert(error.message):listView()}
+async function wipe(){if(prompt('Bu sekmedeki TÜM kayıtlar silinecek. Onay için SİL yazın:')!=='SİL')return;
+  const {error}=await sb.from('orders').delete().eq('tip',tab);error?alert(error.message):listView()}
+function exp(){const ws=XLSX.utils.json_to_sheet(view().map(({id,created_by,...r})=>r));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,tab);XLSX.writeFile(wb,`${tab}_${new Date().toISOString().slice(0,10)}.xlsx`)}
+
+// ---------- EXCEL İÇE AKTARMA ----------
+function rd(buf){ // Excel XML (SpreadsheetML) ya da gerçek xlsx
+  const txt=new TextDecoder('utf-8').decode(buf);
+  if(txt.includes('urn:schemas-microsoft-com:office:spreadsheet')){
+    const un=s=>s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,'&');
+    const rows=[];for(const rm of txt.matchAll(/<Row\b[^>]*>([\s\S]*?)<\/Row>/g)){const row=[];
+      for(const cm of rm[1].matchAll(/<Cell\b([^>]*?)(?:\/>|>([\s\S]*?)<\/Cell>)/g)){
+        const ix=/ss:Index="(\d+)"/.exec(cm[1]);if(ix)while(row.length<ix[1]-1)row.push('');
+        const d=/<Data\b[^>]*>([\s\S]*?)<\/Data>/.exec(cm[2]||'');row.push(d?un(d[1].replace(/<[^>]+>/g,'')):'')}
+      rows.push(row)}
+    return rows}
+  const wb=XLSX.read(buf,{type:'array'});return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:''})}
+const tn=s=>String(s??'').trim(), num=s=>{const n=parseFloat(String(s).replace(',','.'));return isNaN(n)?0:n};
+async function imp(files){
+  const map=new Map();
+  for(const f of files){const rows=rd(await f.arrayBuffer()),h=rows[0].map(tn),i=n=>h.indexOf(n);
+    for(const r of rows.slice(1)){const g=n=>tn(r[i(n)]);const talep=g('Talep No'),km=g('2. mlz no');if(!talep||!km)continue;
+      const bm=num(g('Birim maliyeti')),tt=num(g('İlk sipariş tutarı'));
+      const o={talep_no:talep,km_kodu:km,tip:/^HK/i.test(km)?'hizmet':'siparis',tanim:g('Satır tanımı'),tanim2:g('Tanım satır 2'),kullanim:g('Kullanım Yeri Ve Açıklama'),
+        talep_tarihi:g('Talep tarihi')||null,masraf_merkezi:g('Maliyet Merkezi'),masraf_merkezi_adi:g('Maliyet Merkezi Adı'),masraf_tipi:g('Masraf Tipi Adı'),
+        tedarikci:g('Tedarikçi adı'),talep_eden:g('İşlemi başlatan'),satinalmaci:g('Satınalmacı'),son_durum:g('Son durum'),
+        birim_maliyet:bm,tutar:tt,miktar:bm?Math.round(tt/bm)||1:1};
+      map.set(talep+'|'+km,o)}} // mükerrer: sonuncu kalır
+  const all=[...map.values()],iptal=all.filter(o=>o.son_durum==='980').map(o=>({...o,durum:'iptal'})),diger=all.filter(o=>o.son_durum!=='980');
+  let err=null;for(const part of [diger,iptal]){for(let k=0;k<part.length;k+=300){
+    const {error}=await sb.from('orders').upsert(part.slice(k,k+300),{onConflict:'talep_no,km_kodu'});if(error){err=error;break}}}
+  alert(err?'Hata: '+err.message:`${all.length} kayıt işlendi (yeni eklenenler eklendi, var olanlar güncellendi).`);listView()}
+
+// ---------- KATALOG + FOTOĞRAF ----------
+async function catView(){
+  const m=$('#main');m.innerHTML=`<div class="bar"><input id="q" placeholder="KM kodu / tanım ara" style="min-width:260px"></div><div id="g" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px"></div>`;
+  const {data:d}=await sb.from('materials').select('*').order('km_kodu').limit(5000);mats=d||[];
+  const dr=()=>{const q=$('#q').value.toLowerCase();$('#g').innerHTML=mats.filter(x=>(x.km_kodu+' '+x.tanim).toLowerCase().includes(q)).slice(0,120).map(x=>
+    `<div class="card"><b>${esc(x.km_kodu)}</b><div>${esc(x.tanim)}</div><div class="mu">${esc(x.tanim2)}</div><div class="bar"><button onclick="photos('${x.km_kodu}')">🖼 Fotoğraflar</button>${W()?`<button onclick="up('${x.km_kodu}')">＋ Ekle</button>`:''}</div><div class="ph" id="p_${x.km_kodu}"></div></div>`).join('')};
+  $('#q').oninput=dr;dr()}
+const tok=async()=>(await sb.auth.getSession()).data.session.access_token;
+async function wf(p,o={}){return fetch(WORKER_URL+p,{...o,headers:{...(o.headers||{}),Authorization:'Bearer '+await tok()}})}
+async function photos(km){const el=document.getElementById('p_'+km),{data:p}=await sb.from('photos').select('id,path').eq('km_kodu',km);
+  if(!p?.length){el.innerHTML='<span class="mu">Fotoğraf yok</span>';return}el.innerHTML='';
+  for(const x of p){const r=await wf('/img/'+x.path);if(!r.ok)continue;const u=URL.createObjectURL(await r.blob()),d=document.createElement('div');
+    d.innerHTML=`<a href="${u}" target="_blank"><img src="${u}"></a>`+(K()?`<br><button class="r" onclick="dph(${x.id},'${x.path}','${km}')">Sil</button>`:'');el.appendChild(d)}}
+async function dph(id,path,km){if(!confirm('Fotoğraf silinsin mi?'))return;const r=await wf('/img/'+path,{method:'DELETE'});if(!r.ok)return alert('Silinemedi: '+await r.text());await sb.from('photos').delete().eq('id',id);photos(km)}
+async function sikistir(file){const bmp=await createImageBitmap(file),s=Math.min(1,1080/bmp.width),c=document.createElement('canvas');c.width=bmp.width*s;c.height=bmp.height*s;c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);
+  let q=.85,b;do{b=await new Promise(r=>c.toBlob(r,'image/jpeg',q));q-=.08}while(b.size>200*1024&&q>.3);return b}
+function up(km){const i=document.createElement('input');i.type='file';i.accept='image/*';i.multiple=true;i.onchange=async()=>{
+  for(const f of i.files){const b=await sikistir(f),path=`${km}/${Date.now()}_${Math.random().toString(36).slice(2,6)}.jpg`;
+    const r=await wf('/img/'+path,{method:'PUT',headers:{'Content-Type':'image/jpeg'},body:b});if(!r.ok){alert('Yükleme hatası: '+await r.text());return}
+    const {error}=await sb.from('photos').insert({km_kodu:km,path});if(error){alert(error.message);return}}
+  photos(km)};i.click()}
+
+// ---------- DELTA RAPOR ----------
+async function repView(){
+  $('#main').innerHTML=`<div class="card"><p>Son rapordan bu yana eklenen/değişen kayıtlardan Outlook uyumlu e-posta taslağı üretir.</p>${W()?'<button id="rb">📧 Güncel Rapor Oluştur</button>':'<p class="mu">Rapor oluşturma yetkiniz yok.</p>'}<div id="rep" hidden style="margin-top:12px"></div><button id="cp" hidden style="margin-top:8px">📋 Kopyala</button></div>`;
+  if(!W())return;$('#rb').onclick=async()=>{
+    const {data:l}=await sb.from('report_log').select('created_at').order('created_at',{ascending:false}).limit(1);const since=l?.[0]?.created_at||'1970-01-01';
+    const {data:o,error}=await sb.from('orders').select('*').or(`created_at.gt.${since},durum_tarihi.gt.${since}`).limit(2000);if(error)return alert(error.message);
+    const yeni=o.filter(r=>r.tip==='siparis'&&r.created_at>since),hiz=o.filter(r=>r.tip==='hizmet'&&r.created_at>since),gel=o.filter(r=>r.durum==='gelen'&&r.durum_tarihi>since);
+    const tb=(rs,ex)=>rs.length?`<table border="1" cellspacing="0" cellpadding="4" style="border-collapse:collapse;font:12px Arial"><tr style="background:#eee"><th>Talep No</th><th>KM Kodu</th><th>Tanım</th><th>Miktar</th><th>Masraf Mrk.</th>${ex?'<th>Seri No</th>':''}</tr>${rs.map(r=>`<tr><td>${esc(r.talep_no)}</td><td>${esc(r.km_kodu)}</td><td>${esc(r.tanim)} ${esc(r.tanim2)}</td><td>${r.miktar}</td><td>${esc(r.masraf_merkezi)}</td>${ex?`<td>${esc(r.seri_no)}</td>`:''}</tr>`).join('')}</table>`:'<i>Değişiklik yok.</i>';
+    const h=`<div style="font:14px Arial"><p>Merhaba,</p><p>Güncel malzeme listesi bilgilerinize sunulmuştur. Yapılan değişiklikler:</p>${tb(yeni)}<p>Yukarıdaki kalemler sipariş listesine eklendi.</p>${tb(hiz,1)}<p>Yukarıdaki kalemler tamire/hizmete gidecekler listesine eklendi.</p>${tb(gel)}<p>Yukarıdaki kalemler siparişten gelenler listesine eklendi.</p><p>Saygılarımla.</p></div>`;
+    $('#rep').innerHTML=h;$('#rep').hidden=false;$('#cp').hidden=false;await sb.from('report_log').insert({});
+    $('#cp').onclick=async()=>{try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([h],{type:'text/html'})})]);alert('Kopyalandı. Outlook\'a yapıştırın.')}catch(e){const r=document.createRange();r.selectNode($('#rep'));getSelection().removeAllRanges();getSelection().addRange(r);document.execCommand('copy');alert('Kopyalandı.')}}}}
+
+// ---------- ÜYE YÖNETİMİ ----------
+async function usersView(){
+  const {data:u}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+  $('#main').innerHTML=`<div class="card tw"><table><tr><th>Ad</th><th>E-posta</th><th>Rol</th><th>Durum</th><th></th></tr>${u.map(x=>`<tr><td>${esc(x.full_name)}</td><td>${esc(x.email)}</td>
+  <td>${K()&&x.id!==me.id?`<select onchange="upd('${x.id}',{role:this.value})">${['viewer','editor','admin','kurucu'].map(r=>`<option ${r===x.role?'selected':''}>${r}</option>`).join('')}</select>`:x.role}</td>
+  <td>${x.status}</td><td>${x.role!=='kurucu'?`<button onclick="upd('${x.id}',{status:'approved'})">Onayla</button> <button class="r" onclick="upd('${x.id}',{status:'rejected'})">Reddet</button>`:''}</td></tr>`).join('')}</table></div>`}
+async function upd(id,v){const {error}=await sb.from('profiles').update(v).eq('id',id);error?alert(error.message):usersView()}
+function lab(){const t=document.querySelector('.card table');if(!t)return;const hd=[...t.querySelectorAll('th')].map(x=>x.textContent);
+  t.querySelectorAll('tr').forEach(r=>[...r.querySelectorAll('td')].forEach((c,i)=>c.dataset.l=hd[i]||''))}
+const _d=draw;draw=function(){_d();lab()};const _u=usersView;usersView=async function(){await _u();lab()};
+boot();
+</script></body></html>
