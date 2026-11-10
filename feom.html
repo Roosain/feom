@@ -96,7 +96,7 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom));font-size:15px}.vb
 .mn button.on{color:#0a1020;background:linear-gradient(135deg,var(--c),var(--c2));box-shadow:0 0 24px var(--g),0 8px 18px #0009;transform:translateY(-9px) scale(1.05)}
 .mn button:hover{transform:none}.mn button.on:hover{transform:translateY(-9px) scale(1.05)}
 .mn .bd{top:2px;right:8px}
-.swg{grid-template-columns:1fr}.vr{grid-template-columns:1fr}.mxg{grid-template-columns:120px repeat(14,46px)}
+.swg{grid-template-columns:1fr}.vr{grid-template-columns:1fr}.mxg{grid-template-columns:120px repeat(14,50px)}.mxg2{grid-template-columns:120px repeat(42,28px)}
 .acts{width:100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
 .sub{flex-wrap:nowrap;overflow-x:auto;padding:4px 2px 10px}
 .two{grid-template-columns:1fr}.fg{grid-template-columns:1fr}
@@ -154,13 +154,18 @@ tr.dim,.oc.dim{opacity:.6}
 .pcp.clk{cursor:pointer}.pcp.clk:hover{box-shadow:0 0 12px var(--k)}
 .vo{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 0;border-top:1px solid #1c2740}
 .mxw{overflow:auto;max-height:70vh;border-radius:12px}
-.mxg{display:grid;grid-template-columns:170px repeat(14,50px);min-width:max-content}
+.mxg{display:grid;grid-template-columns:170px repeat(14,54px);min-width:max-content}
 .mh{padding:7px 2px;text-align:center;font-size:11px;color:var(--mu);position:sticky;top:0;background:#0b1322;z-index:2}.mh.td{color:var(--c);font-weight:700}
 .sticky{position:sticky;left:0;background:#0b1322;z-index:1}
 .mt{grid-column:1/-1;padding:6px 8px;font-weight:700;color:var(--c);background:#101a2d;position:sticky;left:0}
 .mnm{padding:6px 8px;font-size:13px;display:flex;align-items:center}
 .mc{display:grid;place-items:center;height:34px;margin:2px;border-radius:8px;background:color-mix(in srgb,var(--k) 16%,#0b1220);color:var(--k);border:1px solid color-mix(in srgb,var(--k) 45%,transparent);font-size:12px;font-weight:700;cursor:pointer}
 .mc.td{box-shadow:0 0 0 1px var(--c)}
+.mxg2{display:grid;grid-template-columns:170px repeat(42,28px);min-width:max-content}
+.sc{height:30px;margin:1px;border-radius:5px;font-size:10px;display:grid;place-items:center;color:var(--k);cursor:pointer}
+.sc.x{background:color-mix(in srgb,var(--k) 30%,transparent);border:1px solid var(--k);font-weight:700}
+.sc.off{font-size:11px;font-weight:700;background:color-mix(in srgb,var(--k) 14%,#0b1220);border:1px solid color-mix(in srgb,var(--k) 40%,transparent);border-radius:8px}
+.mc{font-size:11px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important}}
 </style></head><body>
 <div class="safe"></div><div id="app" class="wrap"></div>
@@ -258,14 +263,14 @@ async function ozetView(){
   try{
     const hd=()=>sb.from('orders').select('id',{count:'exact',head:true}),c=q=>q.then(r=>r.count||0);
     const ay=bugun().slice(0,8)+'01',hf=new Date(Date.now()-6*864e5).toISOString().slice(0,10);
-    const [a,k,h,e,rc,l1,l2]=await Promise.all([
+    const [a,k,h,e,rc,l1,l2,ist]=await Promise.all([
       c(hd().eq('tip','siparis').in('durum',['bekleyen','kismi'])),c(hd().eq('durum','kismi')),
       c(hd().eq('tip','hizmet').in('durum',['bekleyen','kismi'])),c(hd().eq('tip','hizmet').or('seri_no.is.null,seri_no.eq.,tamir_km.is.null')),
       pg(()=>sb.from('receipts').select('adet,tarih').gte('tarih',ay).order('id')),
       sb.from('receipts').select('*,orders(talep_no,km_kodu,tanim,tanim2)').order('created_at',{ascending:false}).limit(8),
-      sb.from('orders').select('talep_no,km_kodu,tanim,tanim2,tip,miktar,created_at').order('son_hareket',{ascending:false}).limit(8)]);
-    const KP=[['🛒','Açık Sipariş',a,'var(--c)','siparis'],['🧩','Kısmi Gelen',k,'var(--pk)','siparis'],['🛠','Hizmette',h,'var(--c2)','hizmet'],['❗','Eksik Bilgi (hizmet)',e,'var(--er)','hizmet'],['📥','Bu Ay Gelen Adet',rc.reduce((s,x)=>s+x.adet,0),'var(--ok)','gelen'],['🗓','Son 7 Gün Teslimat',rc.filter(x=>x.tarih>=hf).length,'var(--wa)','gelen']];
-    $('#kp').innerHTML=KP.map(([i,t,v,col,to])=>`<div class="card kpi" style="--k:${col}" onclick="go('${to}')"><div class="ic">${i}</div><div class="n" data-v="${v}">0</div><div class="mu">${t}</div></div>`).join('');
+      sb.from('orders').select('talep_no,km_kodu,tanim,tanim2,tip,miktar,created_at').order('son_hareket',{ascending:false}).limit(8),c(sb.from('istekler').select('id',{count:'exact',head:true}).eq('durum','bekliyor'))]);
+    const KP=[['📝','Bekleyen İstek',ist,'var(--c2)','istek'],['🛒','Açık Sipariş',a,'var(--c)','siparis'],['🧩','Kısmi Gelen',k,'var(--pk)','siparis'],['🛠','Hizmette',h,'var(--c2)','hizmet'],['❗','Eksik Bilgi (hizmet)',e,'var(--er)','hizmet'],['📥','Bu Ay Gelen Adet',rc.reduce((s,x)=>s+x.adet,0),'var(--ok)','gelen'],['🗓','Son 7 Gün Teslimat',rc.filter(x=>x.tarih>=hf).length,'var(--wa)','gelen']];
+    $('#kp').innerHTML=KP.map(([i,t,v,col,to])=>`<div class="card kpi" style="--k:${col}" onclick="${to==='istek'?'goIstek()':`go('${to}')`}"><div class="ic">${i}</div><div class="n" data-v="${v}">0</div><div class="mu">${t}</div></div>`).join('');
     document.querySelectorAll('.n').forEach(cnt);
     $('#l1').innerHTML=(l1.data||[]).map(x=>`<div class="li"><b>${x.tarih}</b><span>${x.adet} adet</span><span class="led h_${x.hedef}">${HL[x.hedef]}</span><span>${esc(x.orders?.km_kodu)} · ${esc(x.orders?.tanim2||x.orders?.tanim)}</span></div>`).join('')||'<span class="mu">Henüz teslimat yok</span>';
     $('#l2').innerHTML=(l2.data||[]).map(x=>`<div class="li"><b>${esc(x.km_kodu)}</b><span class="led ${x.tip==='hizmet'?'kismi':'bekleyen'}">${x.tip==='hizmet'?'hizmet':'sipariş'}</span><span>${esc(x.tanim2||x.tanim)}</span><span class="mu">${x.miktar||''} adet</span></div>`).join('')||'<span class="mu">Henüz kayıt yok</span>';
@@ -274,12 +279,12 @@ async function ozetView(){
 
 // ---------- SİPARİŞ / HİZMET LİSTESİ ----------
 const HZ={bekleyen:'Hizmette',gelen:'Geri Geldi'};
-const SUBS=[['akt','Aktif','var(--c)'],['bekleyen','Bekleyen','var(--wa)'],['kismi','Kısmi Gelen','var(--pk)'],['gelen','Tamamı Geldi','var(--ok)'],['iptal','İptal','var(--er)'],['!','Eksik Bilgi','#fb923c'],['','Tümü','var(--mu)']];
+const SUBS=[['istek','📝 İstekler','var(--c2)'],['akt','Aktif','var(--c)'],['bekleyen','Bekleyen','var(--wa)'],['kismi','Kısmi Gelen','var(--pk)'],['gelen','Tamamı Geldi','var(--ok)'],['iptal','İptal','var(--er)'],['!','Eksik Bilgi','#fb923c'],['','Tümü','var(--mu)']];
 const SC={bekleyen:'var(--wa)',kismi:'var(--pk)',gelen:'var(--ok)',iptal:'var(--er)',eksik:'#fb923c'};
 const SORTS=[['akt','Varsayılan (aktifler önce)'],['son_hareket','Son hareket'],['talep_tarihi','Talep tarihi'],['son_gelis','Son geliş'],['talep_no','Talep no'],['km_kodu','KM kodu'],['oran','Gelen oranı'],['masraf_merkezi','Masraf merkezi'],['tanim2','Tanım (A-Z)']];
 const eks=r=>r.tip==='hizmet'&&(!r.tamir_km||!r.seri_no);
 const okf=(r,k)=>!k||(k==='akt'?['bekleyen','kismi','eksik'].includes(r.durum):k==='!'?(r.durum==='eksik'||eks(r)):r.durum===k);
-let F={};
+let F={},IS=[],kmC=null;
 const fkey=()=>'feom_f_'+tab;
 function loadF(){try{F=JSON.parse(localStorage.getItem(fkey())||'{}')}catch(e){F={}}F={sort:'akt',dir:'desc',mm:'',te:'',d1:'',d2:'',...F};sub=F.sub??'akt'}
 function saveF(){F.sub=sub;try{localStorage.setItem(fkey(),JSON.stringify(F))}catch(e){}}
@@ -299,7 +304,9 @@ function view(){const q=($('#q')?.value||'').toLowerCase();
 async function listView(){
   const m=$('#main');m.innerHTML='<div class="mu">Yükleniyor…</div>';loadF();
   try{data=await pg(()=>sb.from('orders').select('*').eq('tip',tab).order('son_hareket',{ascending:false}).order('id',{ascending:false}))}catch(e){return m.innerHTML=`<p class="warn">${esc(e.message)}</p>`}
-  $('#acts').innerHTML=(can('yaz')?`<button class="pri" onclick="kayitForm()">＋ Yeni Kayıt</button><button onclick="$('#fx').click()">📥 Excel İçe Aktar</button><input id="fx" type="file" accept=".xls,.xlsx" multiple hidden>`:'')+`<button onclick="exp()">📤 Excel'e Aktar</button>`+(can('sil')?`<button class="r" onclick="wipe()">🗑 Listeyi Temizle</button>`:'');
+  try{IS=await pg(()=>sb.from('istekler').select('*').eq('tip',tab).order('created_at',{ascending:false}).order('id',{ascending:false}))}catch(e){IS=[]}
+  kmLoad().catch(()=>{});
+  $('#acts').innerHTML=`<button class="pri" onclick="istekForm()">📝 İstek Oluştur</button>`+(can('yaz')?`<button class="pri" onclick="kayitForm()">＋ Yeni Kayıt</button><button onclick="$('#fx').click()">📥 Excel İçe Aktar</button><input id="fx" type="file" accept=".xls,.xlsx" multiple hidden>`:'')+`<button onclick="exp()">📤 Excel'e Aktar</button>`+(can('sil')?`<button class="r" onclick="wipe()">🗑 Listeyi Temizle</button>`:'');
   if(can('yaz'))$('#fx').onchange=e=>imp(e.target.files);
   const mms=[...new Map(data.filter(r=>r.masraf_merkezi).map(r=>[r.masraf_merkezi,r.masraf_merkezi_adi])).entries()].sort(),tes=[...new Set(data.map(r=>String(r.talep_eden||'').toUpperCase()).filter(Boolean))].sort();
   m.innerHTML=`<div class="bar tool"><input id="q" placeholder="Ara (KM, talep no, tanım, kişi…)" style="flex:1;min-width:200px"><select id="fs" title="Sıralama">${SORTS.map(([k,t])=>`<option value="${k}" ${k===F.sort?'selected':''}>↕ ${t}</option>`).join('')}</select><button id="fdir"></button><button id="ff">⚙ Filtre <span id="fc"></span></button><button id="fr">✕ Temizle</button></div>
@@ -307,7 +314,7 @@ async function listView(){
   <div><label class="lb">Talep eden</label><select id="fte" style="width:100%"><option value="">Tümü</option>${tes.map(c=>`<option value="${esc(c)}" ${c===F.te?'selected':''}>${esc(kn(c))}</option>`).join('')}</select></div>
   <div><label class="lb">Talep tarihi — başlangıç</label><input id="fd1" type="date" value="${esc(F.d1)}" style="width:100%"></div><div><label class="lb">Talep tarihi — bitiş</label><input id="fd2" type="date" value="${esc(F.d2)}" style="width:100%"></div></div></div>
   <div class="mu" id="cnt" style="margin:2px 2px 8px"></div>
-  <div class="card tw" id="tbw"><table><thead><tr>${TH()}</tr></thead><tbody id="tb"></tbody></table></div><div id="cards"></div>`;
+  <div id="ireq" hidden></div><div class="card tw" id="tbw"><table><thead><tr>${TH()}</tr></thead><tbody id="tb"></tbody></table></div><div id="cards"></div>`;
   const FM={fmm:'mm',fte:'te',fd1:'d1',fd2:'d2'};
   Object.entries(FM).forEach(([id,k])=>$('#'+id).onchange=e=>{F[k]=e.target.value;saveF();draw()});
   $('#q').oninput=draw;$('#fs').onchange=e=>{F.sort=e.target.value;if(F.sort==='akt')F.dir='desc';saveF();draw();hdr();dirBtn()};
@@ -316,8 +323,8 @@ async function listView(){
   $('#fr').onclick=()=>{F.mm=F.te=F.d1=F.d2='';Object.keys(FM).forEach(id=>$('#'+id).value='');$('#q').value='';saveF();draw()};
   dirBtn();if(F.mm||F.te||F.d1||F.d2)$('#fp').hidden=false;draw();
 }
-function subDraw(){$('#sub').innerHTML=SUBS.map(([k,t,c])=>`<button class="sb ${k===sub?'on':''}" style="--k:${c}" onclick="sub='${k}';saveF();draw()">${(tab==='hizmet'&&HZ[k])||t}<b>${data.filter(r=>okf(r,k)).length}</b></button>`).join('')}
-function draw(){subDraw();const v=view(),mb=isMob();$('#cnt').textContent=v.length+' kayıt';
+function subDraw(){$('#sub').innerHTML=SUBS.map(([k,t,c])=>`<button class="sb ${k===sub?'on':''}" style="--k:${c}" onclick="sub='${k}';saveF();draw()">${(tab==='hizmet'&&HZ[k])||t}<b>${k==='istek'?IS.filter(x=>x.durum==='bekliyor').length:data.filter(r=>okf(r,k)).length}</b></button>`).join('')}
+function draw(){subDraw();const ist=sub==='istek';$('#ireq').hidden=!ist;if(ist){$('#tbw').hidden=true;$('#cards').hidden=true;return istekDraw()}const v=view(),mb=isMob();$('#cnt').textContent=v.length+' kayıt';
   $('#fc').textContent=['mm','te','d1','d2'].filter(k=>F[k]).length?`(${['mm','te','d1','d2'].filter(k=>F[k]).length})`:'';
   $('#tbw').hidden=mb;$('#cards').hidden=!mb;
   if(mb)$('#cards').innerHTML=v.slice(0,300).map(card).join('')||'<div class="mu">Kayıt yok</div>';else $('#tb').innerHTML=v.slice(0,800).map(row).join('')}
@@ -347,12 +354,12 @@ function exp(){const H={talep_no:'Talep No',km_kodu:'KM Kodu',tanim:'Tanım',tan
   const ws=XLSX.utils.json_to_sheet(view().map(r=>Object.fromEntries(Object.entries(H).map(([k,l])=>[l,r[k]]))));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,tab);XLSX.writeFile(wb,`${tab}_${bugun()}.xlsx`)}
 
 // ----- manuel kayıt / düzenleme -----
-function kayitForm(id){
-  const e=id!=null,r=e?data.find(x=>x.id===id):{tip:tab,talep_tarihi:bugun(),miktar:1};
+function kayitForm(id,pre){
+  const e=id!=null,r=e?data.find(x=>x.id===id):{tip:tab,talep_tarihi:bugun(),miktar:1,...(pre||{})};
   const f=(i,l,v,t='text',x='',w='')=>`<div class="${w}"><label>${l}</label><input id="${i}" type="${t}" value="${esc(v??'')}" ${x}></div>`;
   const mo=`<option value="">—</option>`+mcs.filter(x=>x.ust).map(x=>`<option value="${esc(x.kod)}" ${x.kod===r.masraf_merkezi?'selected':''}>${esc(x.kod)} · ${esc(x.ad)}</option>`).join('');
   const m=modal(`<h3>${e?'✏️ Kaydı Düzenle':'＋ Yeni Kayıt'}</h3><div class="fg">
-  ${f('f_tn','Talep No *',r.talep_no,'text',e?'disabled':'')}${f('f_km','KM Kodu *',r.km_kodu,'text',e?'disabled':'')}
+  ${f('f_tn','Talep No *',r.talep_no,'text',e?'disabled':'')}${f('f_km','KM / HK Kodu *',r.km_kodu,'text',e?'disabled':'')}
   <div><label>Tür</label><select id="f_tip"><option value="siparis" ${r.tip==='siparis'?'selected':''}>Sipariş</option><option value="hizmet" ${r.tip==='hizmet'?'selected':''}>Hizmet</option></select></div>${f('f_mk','Miktar',r.miktar,'number','min="1"')}
   ${f('f_t1','Tanım (satır tanımı)',r.tanim,'text','','w')}${f('f_t2','Tanım 2',r.tanim2,'text','','w')}${f('f_ku','Kullanım yeri ve açıklama',r.kullanim,'text','','w')}
   ${f('f_td','Talep (sipariş) tarihi',r.talep_tarihi,'date')}${f('f_tt','Termin tarihi',r.termin_tarihi,'date')}
@@ -370,8 +377,9 @@ function kayitForm(id){
       masraf_merkezi:mm||null,masraf_merkezi_adi:(mcs.find(x=>x.kod===mm)||{}).ad||null,miktar:parseInt(v('f_mk'))||1,talep_eden:v('f_te').toUpperCase()||null,
       satinalmaci:v('f_sa')||null,tedarikci:v('f_td2')||null,seri_no:v('f_sn')||null,tamir_km:v('f_tk').toUpperCase()||null,notu:v('f_nt')||null};
     if(!['gelen','kismi'].includes(r.durum))o.durum=v('f_du');
-    const {error}=e?await sb.from('orders').update(o).eq('id',id):await sb.from('orders').insert({...o,talep_no:tn,km_kodu:km});
+    const res=e?await sb.from('orders').update(o).eq('id',id):await sb.from('orders').insert({...o,talep_no:tn,km_kodu:km}).select('id').single(),error=res.error;
     if(error)return alert(error.code==='23505'?'Bu Talep No + KM Kodu zaten kayıtlı.':error.message);
+    if(!e&&pre&&pre.after)await pre.after(res.data.id);
     m.remove();listView()};
 }
 
@@ -421,6 +429,49 @@ async function imp(files){
   const all=[...map.values()],isI=o=>o.son_durum==='980'||!!o.iptal_tarihi,iptal=all.filter(isI).map(o=>({...o,durum:'iptal'})),diger=all.filter(o=>!isI(o));
   let err=null;for(const part of [diger,iptal]){for(let k=0;k<part.length;k+=300){const {error}=await sb.from('orders').upsert(part.slice(k,k+300),{onConflict:'talep_no,km_kodu'});if(error){err=error;break}}}
   alert(err?'Hata: '+err.message:`${all.length} kayıt işlendi (yeni olanlar eklendi, var olanlar güncellendi).`);listView()}
+
+// ---------- İSTEKLER ----------
+async function kmLoad(){if(kmC)return;const l=await pg(()=>sb.from('materials').select('km_kodu,tanim,tanim2').order('km_kodu'));kmC=Object.fromEntries(l.filter(x=>/^KM/i.test(x.km_kodu)).map(x=>[x.km_kodu,x]))}
+const ISD={bekliyor:['Bekliyor','var(--wa)','⏳'],dondu:['Siparişe döndü','var(--ok)','✅'],reddedildi:['Reddedildi','var(--er)','✕']};
+const icard=x=>{const k=kmC?.[x.km_kodu],d=ISD[x.durum];return `<div class="card oc ${x.durum!=='bekliyor'?'dim':''}" style="--k:${d[1]};margin-bottom:12px"><div class="oh"><b>${esc(x.km_kodu)}</b><span class="mu">${x.adet} adet</span><span class="sp"></span><span class="chip2" style="--k:${d[1]}">${d[2]} ${x.durum==='dondu'&&x.tip==='hizmet'?'Hizmete döndü':d[0]}</span></div>
+${k?`<div class="ot">${esc(k.tanim2||k.tanim)}</div><div class="mu">${esc(k.tanim2?k.tanim:'')}</div>`:'<div class="mu">Katalogda bulunamadı</div>'}${x.aciklama?`<div style="margin:6px 0">${esc(x.aciklama)}</div>`:''}${x.seri_no?`<div class="mu">Seri: ${esc(x.seri_no)}</div>`:''}
+${x.foto?.length?`<div class="ph">${x.foto.map(p=>`<img data-p="${esc(p)}" alt="" onclick="window.open(this.src)">`).join('')}</div>`:''}
+<div class="om"><span>👤 ${esc(x.isteyen_ad)}</span><span>📅 ${(x.created_at||'').slice(0,10)}</span>${x.red_notu?`<span>Not: ${esc(x.red_notu)}</span>`:''}</div>
+<div class="ac">${x.durum==='bekliyor'&&can('yaz')?`<button class="pri" onclick="istekDok(${x.id})">➡ ${x.tip==='hizmet'?'Hizmete':'Siparişe'} Dök</button><button onclick="istekRed(${x.id})">✕ Reddet</button>`:''}${can('sil')?`<button class="r" onclick="istekSil(${x.id})">🗑 Sil</button>`:''}</div></div>`};
+async function istekDraw(){const q=($('#q')?.value||'').toLowerCase(),L=IS.filter(x=>!q||[x.km_kodu,x.aciklama,x.isteyen_ad,x.seri_no,kmC?.[x.km_kodu]?.tanim,kmC?.[x.km_kodu]?.tanim2].join(' ').toLowerCase().includes(q));
+  $('#cnt').textContent=L.length+' istek';const el=$('#ireq');
+  el.innerHTML=L.map(icard).join('')||'<div class="card mu">Henüz istek yok. "📝 İstek Oluştur" ile başlayın.</div>';
+  const paths=L.slice(0,40).flatMap(x=>x.foto||[]);if(!paths.length)return;
+  const {data:u}=await sb.storage.from('photos').createSignedUrls(paths,3600),m=Object.fromEntries((u||[]).map(x=>[x.path,x.signedUrl]));
+  el.querySelectorAll('[data-p]').forEach(i=>{const s=m[i.dataset.p];if(s)i.src=s})}
+async function istekForm(){await kmLoad().catch(()=>{});
+  const dl=Object.entries(kmC||{}).map(([k,v])=>`<option value="${esc(k)}">${esc(v.tanim2||v.tanim||'')}</option>`).join('');
+  const m=modal(`<h3>📝 ${tab==='hizmet'?'Hizmet / Tamir İsteği':'Malzeme / Sipariş İsteği'}</h3><div class="mu">İsteğiniz mühendis ve üstü yetkililere iletilir; onlar ${tab==='hizmet'?'hizmete':'siparişe'} dönüştürür.</div>
+  <label>KM kodu *</label><input id="i_km" list="i_dl" placeholder="KM18570" autocomplete="off"><datalist id="i_dl">${dl}</datalist><div class="mu" id="i_t"></div>
+  <div class="fg"><div><label>Adet *</label><input id="i_ad" type="number" min="1" value="1"></div>${tab==='hizmet'?'<div><label>Seri no</label><input id="i_sn"></div>':'<div></div>'}</div>
+  <label>Açıklama / nerede kullanılacak</label><input id="i_ac" placeholder="Örn. 5952 tav fırını yedek">
+  <label>Fotoğraf (isteğe bağlı)</label><input id="i_ft" type="file" accept="image/*" multiple><div class="mu" id="i_fp"></div>
+  <div class="bar"><button class="pri" id="i_ok">Gönder</button><button class="r" id="i_x">Vazgeç</button></div>`);
+  const q=s=>m.querySelector(s);q('#i_x').onclick=()=>m.remove();
+  q('#i_km').addEventListener('input',e=>{const k=kmC?.[e.target.value.trim().toUpperCase()];q('#i_t').textContent=k?(k.tanim2||k.tanim||''):''});
+  q('#i_ft').onchange=e=>q('#i_fp').textContent=e.target.files.length?e.target.files.length+' fotoğraf seçildi':'';
+  q('#i_ok').onclick=async()=>{const km=q('#i_km').value.trim().toUpperCase(),ad=parseInt(q('#i_ad').value);
+    if(!/^KM/i.test(km))return alert('KM kodu yazın (örn. KM18570).');if(!(ad>0))return alert('Adet yazın.');
+    const b=q('#i_ok');b.disabled=true;b.textContent='Gönderiliyor…';const foto=[];
+    try{for(const f of q('#i_ft').files){const blob=await sikistir(f),path=`istek/${Date.now()}_${Math.random().toString(36).slice(2,7)}.jpg`;const a=await sb.storage.from('photos').upload(path,blob,{contentType:'image/jpeg'});if(a.error)throw a.error;foto.push(path)}
+      const {error}=await sb.from('istekler').insert({tip:tab,km_kodu:km,adet:ad,aciklama:q('#i_ac').value.trim()||null,seri_no:tab==='hizmet'?(q('#i_sn').value.trim()||null):null,foto,isteyen_ad:me.full_name||me.email});if(error)throw error}
+    catch(er){b.disabled=false;b.textContent='Gönder';return alert(er.message)}
+    m.remove();sub='istek';saveF();listView()}}
+async function istekDok(id){const x=IS.find(r=>r.id===id);await kmLoad().catch(()=>{});const k=kmC?.[x.km_kodu]||{};
+  const pre=x.tip==='hizmet'?{tip:'hizmet',tamir_km:x.km_kodu,seri_no:x.seri_no,tanim:k.tanim,tanim2:k.tanim2,kullanim:x.aciklama,miktar:x.adet}:{tip:'siparis',km_kodu:x.km_kodu,tanim:k.tanim,tanim2:k.tanim2,kullanim:x.aciklama,miktar:x.adet};
+  pre.after=async oid=>{await sb.from('istekler').update({durum:'dondu',order_id:oid,updated_at:new Date().toISOString()}).eq('id',id);
+    if(x.foto?.length)await sb.from('photos').insert(x.foto.map(p=>({km_kodu:x.km_kodu,path:p})))};
+  kayitForm(null,pre)}
+async function istekRed(id){const n=prompt('Reddetme nedeni (isteğe bağlı):');if(n===null)return;const {error}=await sb.from('istekler').update({durum:'reddedildi',red_notu:n||null,updated_at:new Date().toISOString()}).eq('id',id);error?alert(error.message):listView()}
+async function istekSil(id){const x=IS.find(r=>r.id===id);if(!confirm('Bu istek silinsin mi?'))return;
+  if(x.durum!=='dondu'&&x.foto?.length)await sb.storage.from('photos').remove(x.foto);
+  const {error}=await sb.from('istekler').delete().eq('id',id);error?alert(error.message):listView()}
+function goIstek(){tab='siparis';try{const k='feom_f_siparis',f=JSON.parse(localStorage.getItem(k)||'{}');f.sub='istek';localStorage.setItem(k,JSON.stringify(f))}catch(e){}appView()}
 
 // ---------- GELEN ÜRÜNLER ----------
 async function gelenView(){const m=$('#main');m.innerHTML='<div class="mu">Yükleniyor…</div>';
@@ -562,20 +613,22 @@ async function purge(say){const ay=parseInt($('#pm').value),bt=$('#pb').checked;
   const r=await sb.rpc('eski_kayit_sil',{p_ay:ay,p_sadece_biten:bt,p_say:false});$('#pr').textContent=r.error?r.error.message:`${r.data} kayıt silindi.`}
 
 // ---------- VARDİYA ÇİZELGESİ ----------
-const SD={V1:{ad:'Gündüz vardiyası',saat:'08:00-16:00',b:8,s:16,c:'#34d399',k:'V1'},V2:{ad:'Akşam vardiyası',saat:'16:00-24:00',b:16,s:24,c:'#60a5fa',k:'V2'},V3:{ad:'Gece vardiyası',saat:'00:00-08:00',b:0,s:8,c:'#a78bfa',k:'V3'},GUNDUZ:{ad:'Gündüz bakım',saat:'08:00-17:30',b:8,s:17.5,c:'#fbbf24',k:'GND'},HT:{ad:'Hafta tatili',c:'#64748b',k:'HT'},YI:{ad:'Yıllık izin',c:'#2dd4bf',k:'Yİ'},RAPOR:{ad:'Raporlu',c:'#f87171',k:'RAP'},EGITIM:{ad:'Eğitim',saat:'09:00-17:00',c:'#c084fc',k:'EĞT'},IDARI:{ad:'İdari izin',c:'#38bdf8',k:'İİ'},RT:{ad:'Resmi tatil',c:'#ef4444',k:'RT'}};
+const SD={V1:{ad:'Gündüz vardiyası',saat:'08:00-16:00',b:8,s:16,c:'#34d399',k:'8-16'},V2:{ad:'Akşam vardiyası',saat:'16:00-24:00',b:16,s:24,c:'#60a5fa',k:'16-24'},V3:{ad:'Gece vardiyası',saat:'00:00-08:00',b:0,s:8,c:'#a78bfa',k:'0-8'},GUNDUZ:{ad:'Gündüz bakım',saat:'08:00-17:30',b:8,s:17.5,c:'#fbbf24',k:'GND'},HT:{ad:'Hafta tatili',c:'#64748b',k:'TATİL'},YI:{ad:'Yıllık izin',c:'#2dd4bf',k:'İZİN'},RAPOR:{ad:'Raporlu',c:'#f87171',k:'RAPOR'},EGITIM:{ad:'Eğitim',saat:'09:00-17:00',b:9,s:17,c:'#c084fc',k:'EĞİT'},IDARI:{ad:'İdari izin',c:'#38bdf8',k:'İDARİ'},RT:{ad:'Resmi tatil',c:'#ef4444',k:'RESMİ'}};
+const sd=t=>SD[t]||{ad:'Girilmemiş',k:'—',c:'#334155'};
+const WORK=['V1','V2','V3','GUNDUZ','EGITIM'];
 const GUN=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'],AY=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-let EK=[],PE=[],OZ={},VA='2026-10-19',vOff=0,vF='all',vMode='gun';
+let EK=[],PE=[],OZ={},VA='2026-10-19',VR='1',vOff=0,vF='all',vMode='gun',vMon=new Date().toISOString().slice(0,7);
 const addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const dstr=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const dl=s=>{const d=new Date(s+'T12:00:00');return `${d.getDate()} ${AY[d.getMonth()]}`};
 const weekStart=()=>{const d=addD(new Date(),vOff),k=(d.getDay()+6)%7;return addD(d,-k)};
-async function vload(){
-  const c=addD(new Date(),vOff),a=dstr(addD(c,-45)),b=dstr(addD(c,75));
-  const [e,p,o,s]=await Promise.all([sb.from('ekipler').select('*').order('sira'),pg(()=>sb.from('personel').select('*').order('sira').order('ad')),pg(()=>sb.from('vardiya_ozel').select('*').gte('tarih',a).lte('tarih',b).order('tarih').order('personel_id')),sb.from('ayarlar').select('deger').eq('anahtar','vardiya_baslangic').maybeSingle()]);
-  if(e.error)throw e.error;EK=e.data||[];PE=p;OZ={};o.forEach(x=>OZ[x.personel_id+'|'+x.tarih]=x);VA=s.data?.deger||VA}
-function rot(e,date){if(e.tur==='gunduz'){const w=new Date(date+'T12:00:00').getDay();return w===0||w===6?'HT':'GUNDUZ'}
+async function ozFetch(a,b){const o=await pg(()=>sb.from('vardiya_ozel').select('*').gte('tarih',a).lte('tarih',b).order('tarih').order('personel_id')),m={};o.forEach(x=>m[x.personel_id+'|'+x.tarih]=x);return m}
+async function vload(){const c=addD(new Date(),vOff);
+  const [e,p,m,s]=await Promise.all([sb.from('ekipler').select('*').order('sira'),pg(()=>sb.from('personel').select('*').order('sira').order('ad')),ozFetch(dstr(addD(c,-45)),dstr(addD(c,75))),sb.from('ayarlar').select('anahtar,deger').in('anahtar',['vardiya_baslangic','vardiya_rotasyon'])]);
+  if(e.error)throw e.error;EK=e.data||[];PE=p;OZ=m;(s.data||[]).forEach(x=>{if(x.anahtar==='vardiya_baslangic')VA=x.deger;if(x.anahtar==='vardiya_rotasyon')VR=x.deger})}
+function rot(e,date){if(e.tur==='serbest')return null;if(e.tur==='gunduz'){const w=new Date(date+'T12:00:00').getDay();return w===0||w===6?'HT':'GUNDUZ'}
   const diff=Math.round((Date.parse(date+'T00:00:00Z')-Date.parse(VA+'T00:00:00Z'))/864e5),i=(((diff+e.ofset)%8)+8)%8;return i<2?'V1':i<4?'V2':i<6?'V3':'HT'}
-function eff(p,date){const o=OZ[p.id+'|'+date];if(o)return o.tip;const e=EK.find(x=>x.ad===p.ekip);return e?rot(e,date):null}
+function eff(p,date,mp){const o=(mp||OZ)[p.id+'|'+date];if(o)return o.tip;if(VR==='0')return null;const e=EK.find(x=>x.ad===p.ekip);return e?rot(e,date):null}
 function grp(date,code,f){return EK.filter(e=>!f||f==='all'||e.ad===f).map(e=>({ekip:e.ad,p:PE.filter(p=>p.aktif&&p.ekip===e.ad&&eff(p,date)===code).sort((x,y)=>(x.gorev==='Formen'?0:1)-(y.gorev==='Formen'?0:1))})).filter(g=>g.p.length)}
 function cur(){const n=new Date(),h=n.getHours()+n.getMinutes()/60,td=dstr(n);let code,nc,nd=td,eh;
   if(h<8){code='V3';nc='V1';eh=8}else if(h<16){code='V1';nc='V2';eh=16}else{code='V2';nc='V3';eh=24;nd=dstr(addD(n,1))}
@@ -584,46 +637,77 @@ const left=m=>`${Math.floor(m/60)} sa ${m%60} dk`;
 const pp=(p,d)=>{const o=OZ[p.id+'|'+d];return `<div class="pp">${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}${o&&o.mesai>0?` <span class="pc">+${o.mesai} sa mesai</span>`:''}</div>`};
 function swHTML(){const c=cur(),now=grp(c.td,c.code),gnd=(c.h>=8&&c.h<17.5)?grp(c.td,'GUNDUZ'):[],nxt=grp(c.nd,c.nc),sum=a=>a.reduce((s,g)=>s+g.p.length,0);
   const tm=(g,d,t)=>`<div class="tm"><div class="tmh"><b>${esc(g.ekip)}${t||''}</b><span class="mu">${g.p.length} kişi</span></div>${g.p.map(p=>pp(p,d)).join('')}</div>`;
-  return `<div class="card sw" style="--k:var(--ok)"><div class="swt"><span class="dot"></span>Şu an vardiyada (${sum(now)+sum(gnd)}) · teslim edecek</div><div class="cd">${SD[c.code].saat} · vardiya değişimine ${left(c.left)} var</div>${now.map(g=>tm(g,c.td)).join('')||'<div class="mu">Bu vardiyada kimse yok</div>'}${gnd.map(g=>tm(g,c.td,' · gündüz')).join('')}</div>
-  <div class="card sw" style="--k:var(--wa)"><div class="swt"><span class="dot"></span>Sıradaki vardiya (${sum(nxt)}) · devralacak</div><div class="cd">${dl(c.nd)} ${SD[c.nc].saat} · ${left(c.left)} sonra</div>${nxt.map(g=>tm(g,c.nd)).join('')||'<div class="mu">Bu vardiyada kimse yok</div>'}</div>`}
+  return `<div class="card sw" style="--k:var(--ok)"><div class="swt"><span class="dot"></span>Şu an vardiyada (${sum(now)+sum(gnd)}) · teslim edecek</div><div class="cd">${SD[c.code].saat} · vardiya değişimine ${left(c.left)} var</div>${now.map(g=>tm(g,c.td)).join('')||'<div class="mu">Bu vardiyada kimse yok / çizelge girilmemiş</div>'}${gnd.map(g=>tm(g,c.td,' · gündüz')).join('')}</div>
+  <div class="card sw" style="--k:var(--wa)"><div class="swt"><span class="dot"></span>Sıradaki vardiya (${sum(nxt)}) · devralacak</div><div class="cd">${dl(c.nd)} ${SD[c.nc].saat} · ${left(c.left)} sonra</div>${nxt.map(g=>tm(g,c.nd)).join('')||'<div class="mu">Bu vardiyada kimse yok / çizelge girilmemiş</div>'}</div>`}
 setInterval(()=>{const e=$('#sw');if(e&&PE.length)e.innerHTML=swHTML()},30000);
 async function vardiyaView(){const m=$('#main');m.innerHTML='<div class="mu">Yükleniyor…</div>';
   try{await vload()}catch(e){return m.innerHTML=`<p class="warn">${esc(e.message)}</p>`}
-  $('#acts').innerHTML=`<button onclick="vExp()">📤 Excel'e Aktar</button>`+(can('vardiya')?`<button onclick="yt='vardiya';go('yonet')">👥 Personel / Ekipler</button>`:'');vDraw()}
+  $('#acts').innerHTML=`<button onclick="vExp()">📤 Excel'e Aktar</button>`+(can('vardiya')?`<button class="pri" onclick="vImpPick()">📥 Çizelge İçe Aktar</button><button onclick="yt='vardiya';go('yonet')">👥 Personel / Ekipler</button>`:'');vDraw()}
 function dayCard(date){const d=new Date(date+'T12:00:00'),td=date===dstr(new Date());
-  const chips=g=>g.p.map(p=>{const o=OZ[p.id+'|'+date];return `<span class="pcp ${can('vardiya')?'clk':''}" style="--k:${SD[eff(p,date)].c}" ${can('vardiya')?`onclick="vEdit('${p.id}','${date}')"`:''}>${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}${o&&o.mesai>0?` +${o.mesai}sa`:''}</span>`}).join('');
+  const chips=g=>g.p.map(p=>{const o=OZ[p.id+'|'+date];return `<span class="pcp ${can('vardiya')?'clk':''}" style="--k:${sd(eff(p,date)).c}" ${can('vardiya')?`onclick="vEdit('${p.id}','${date}')"`:''}>${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}${o&&o.mesai>0?` +${o.mesai}sa`:''}</span>`}).join('');
   const rows=['V3','V1','V2'].map(c=>{const s=SD[c],g=grp(date,c,vF);return `<div class="vr" style="--k:${s.c}"><div class="vh"><b>${s.saat}</b><span class="mu">${s.ad}</span><div class="gb"><i style="left:${s.b/24*100}%;width:${(s.s-s.b)/24*100}%"></i></div></div><div class="vt">${g.map(x=>`<div class="tm"><div class="tmh"><b>${esc(x.ekip)}</b><span class="mu">${x.p.length} kişi</span></div><div class="vc">${chips(x)}</div></div>`).join('')||'<span class="mu">—</span>'}</div></div>`}).join('');
-  const other=['GUNDUZ','EGITIM','YI','RAPOR','IDARI','RT'].map(c=>{const g=grp(date,c,vF);return g.length?`<div class="vo"><span class="led" style="color:${SD[c].c}">${SD[c].ad}</span>${g.map(chips).join('')}</div>`:''}).join('');
-  const dinl=EK.filter(e=>e.tur==='vardiya'&&rot(e,date)==='HT'&&PE.some(p=>p.ekip===e.ad&&p.aktif)&&(vF==='all'||vF===e.ad)).map(e=>esc(e.ad)).join(', ');
-  return `<div class="card vday ${td?'td':''}"><div class="vdh"><h3 style="margin:0">${GUN[d.getDay()]}</h3><span class="mu">${dl(date)}</span>${td?'<span class="led bekleyen">BUGÜN</span>':''}</div>${rows}${other}${dinl?`<div class="vo mu">😴 Hafta tatili: ${dinl}</div>`:''}</div>`}
+  const other=['GUNDUZ','EGITIM','YI','RAPOR','IDARI','RT','HT'].map(c=>{const g=grp(date,c,vF);return g.length?`<div class="vo"><span class="led" style="color:${SD[c].c}">${SD[c].ad}</span>${g.map(chips).join('')}</div>`:''}).join('');
+  return `<div class="card vday ${td?'td':''}"><div class="vdh"><h3 style="margin:0">${GUN[d.getDay()]}</h3><span class="mu">${dl(date)}</span>${td?'<span class="led bekleyen">BUGÜN</span>':''}</div>${rows}${other}</div>`}
+const cellEv=(p,d)=>can('vardiya')?`onclick="vEdit('${p.id}','${d}')"`:'';
 function matrix(){const days=Array.from({length:14},(_,i)=>dstr(addD(weekStart(),i))),today=dstr(new Date());
-  return `<div class="card" style="padding:8px"><div class="mxw"><div class="mxg"><div class="mh sticky" style="z-index:3">Personel</div>${days.map(d=>`<div class="mh ${d===today?'td':''}">${GUN[new Date(d+'T12:00:00').getDay()].slice(0,3)}<br>${new Date(d+'T12:00:00').getDate()}</div>`).join('')}${EK.filter(e=>vF==='all'||e.ad===vF).map(e=>`<div class="mt">${esc(e.ad)}</div>`+PE.filter(p=>p.ekip===e.ad&&p.aktif).map(p=>`<div class="mnm sticky">${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}</div>`+days.map(d=>{const t=eff(p,d),o=OZ[p.id+'|'+d];return `<div class="mc ${d===today?'td':''}" style="--k:${SD[t].c}" ${can('vardiya')?`onclick="vEdit('${p.id}','${d}')"`:''} title="${SD[t].ad}${o&&o.mesai>0?' · +'+o.mesai+' sa mesai':''}">${SD[t].k}${o&&o.mesai>0?'<sup>+</sup>':''}</div>`}).join('')).join('')).join('')}</div></div></div>`}
+  return `<div class="card" style="padding:8px"><div class="mxw"><div class="mxg"><div class="mh sticky" style="z-index:3">Personel</div>${days.map(d=>`<div class="mh ${d===today?'td':''}">${GUN[new Date(d+'T12:00:00').getDay()].slice(0,3)}<br>${new Date(d+'T12:00:00').getDate()}</div>`).join('')}${EK.filter(e=>vF==='all'||e.ad===vF).map(e=>`<div class="mt">${esc(e.ad)}</div>`+PE.filter(p=>p.ekip===e.ad&&p.aktif).map(p=>`<div class="mnm sticky">${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}</div>`+days.map(d=>{const t=eff(p,d),o=OZ[p.id+'|'+d],z=sd(t);return `<div class="mc ${d===today?'td':''}" style="--k:${z.c}" ${cellEv(p,d)} title="${z.ad}${o&&o.mesai>0?' · +'+o.mesai+' sa mesai':''}">${z.k}${o&&o.mesai>0?'<sup>+</sup>':''}</div>`}).join('')).join('')).join('')}</div></div></div>`}
+// saatlik (4 saatlik dilimler) — Excel'deki ÇİZELGE sayfası gibi
+function saatlik(){const days=Array.from({length:7},(_,i)=>dstr(addD(weekStart(),i))),today=dstr(new Date()),sl=['0-4','4-8','8-12','12-16','16-20','20-24'];
+  const cov=t=>{const s=SD[t];if(!s||!WORK.includes(t))return null;return sl.map((_,i)=>s.b<i*4+4&&s.s>i*4)};
+  return `<div class="card" style="padding:8px"><div class="mxw"><div class="mxg2"><div class="mh sticky" style="z-index:3;grid-row:span 2">Personel</div>${days.map(d=>`<div class="mh ${d===today?'td':''}" style="grid-column:span 6">${GUN[new Date(d+'T12:00:00').getDay()]} · ${dl(d)}</div>`).join('')}${days.map(()=>sl.map(x=>`<div class="mh" style="top:26px;font-size:10px">${x}</div>`).join('')).join('')}${EK.filter(e=>vF==='all'||e.ad===vF).map(e=>`<div class="mt">${esc(e.ad)}</div>`+PE.filter(p=>p.ekip===e.ad&&p.aktif).map(p=>`<div class="mnm sticky">${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}</div>`+days.map(d=>{const t=eff(p,d),z=sd(t),cv=cov(t);return cv?cv.map(x=>`<div class="sc ${x?'x':''}" style="--k:${z.c}" ${cellEv(p,d)}>${x?'X':''}</div>`).join(''):`<div class="sc off" style="--k:${z.c};grid-column:span 6" ${cellEv(p,d)}>${z.ad.toUpperCase()}</div>`}).join('')).join('')).join('')}</div></div></div>`}
+// aylık sayılar — Excel'deki "NÖBETÇİ GÜN SAYI" sayfası gibi
+async function vStat(){const el=$('#vst');if(!el)return;const [y,mo]=vMon.split('-').map(Number),n=new Date(y,mo,0).getDate(),mp=await ozFetch(`${vMon}-01`,`${vMon}-${String(n).padStart(2,'0')}`),days=Array.from({length:n},(_,i)=>`${vMon}-${String(i+1).padStart(2,'0')}`);
+  const cols=[['V1','8-16'],['V2','16-24'],['V3','0-8'],['GUNDUZ','Gündüz'],['HT','Tatil'],['YI','Yıllık izin'],['IDARI','İdari izin'],['RAPOR','Rapor'],['EGITIM','Eğitim'],['RT','Resmi tatil']];
+  const rows=EK.filter(e=>vF==='all'||e.ad===vF).flatMap(e=>PE.filter(p=>p.ekip===e.ad&&p.aktif).map(p=>{const c={};let ms=0;days.forEach(d=>{const t=eff(p,d,mp);if(t)c[t]=(c[t]||0)+1;ms+=mp[p.id+'|'+d]?.mesai||0});return `<tr><td><b>${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}</b><div class="mu">${esc(e.ad)}</div></td>${cols.map(([k])=>`<td>${c[k]||0}</td>`).join('')}<td><b>${WORK.reduce((s,k)=>s+(c[k]||0),0)}</b></td><td>${ms}</td></tr>`}));
+  el.innerHTML=`<div class="card tw"><table><thead><tr><th>Personel</th>${cols.map(([,l])=>`<th>${l}</th>`).join('')}<th>Çalışılan gün</th><th>Mesai (sa)</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`}
 function vDraw(){
-  $('#sub').innerHTML=[['gun','Günlük Kartlar'],['mx','Çizelge']].map(([k,t])=>`<button class="sb ${k===vMode?'on':''}" style="--k:var(--c)" onclick="vMode='${k}';vDraw()">${t}</button>`).join('');
-  const days=Array.from({length:7},(_,i)=>dstr(addD(weekStart(),i)));
-  $('#main').innerHTML=`<div id="sw" class="swg">${swHTML()}</div><div class="bar tool"><button onclick="vNav(-7)">‹ Önceki</button><button onclick="vNav(0)">Bugün</button><button onclick="vNav(7)">Sonraki ›</button><select id="vf"><option value="all">Tüm ekipler</option>${EK.map(e=>`<option ${e.ad===vF?'selected':''}>${esc(e.ad)}</option>`).join('')}</select><span class="mu">${dl(days[0])} – ${dl(days[6])}</span></div>${vMode==='gun'?days.map(dayCard).join(''):matrix()}`;
-  $('#vf').onchange=e=>{vF=e.target.value;vDraw()}}
+  $('#sub').innerHTML=[['gun','Günlük Kartlar'],['mx','Çizelge'],['sa','Saatlik'],['st','Aylık Sayılar']].map(([k,t])=>`<button class="sb ${k===vMode?'on':''}" style="--k:var(--c)" onclick="vMode='${k}';vDraw()">${t}</button>`).join('');
+  const days=Array.from({length:7},(_,i)=>dstr(addD(weekStart(),i))),st=vMode==='st';
+  $('#main').innerHTML=`<div id="sw" class="swg">${swHTML()}</div><div class="bar tool">${st?`<input id="vm" type="month" value="${vMon}">`:`<button onclick="vNav(-7)">‹ Önceki</button><button onclick="vNav(0)">Bugün</button><button onclick="vNav(7)">Sonraki ›</button>`}<select id="vf"><option value="all">Tüm ekipler</option>${EK.map(e=>`<option ${e.ad===vF?'selected':''}>${esc(e.ad)}</option>`).join('')}</select>${st?'':`<span class="mu">${dl(days[0])} – ${dl(days[6])}</span>`}</div>${vMode==='gun'?days.map(dayCard).join(''):vMode==='mx'?matrix():vMode==='sa'?saatlik():'<div id="vst">Yükleniyor…</div>'}`;
+  $('#vf').onchange=e=>{vF=e.target.value;vDraw()};if(st){$('#vm').onchange=e=>{vMon=e.target.value||vMon;vDraw()};vStat()}}
 async function vNav(n){vOff=n===0?0:vOff+n;try{await vload();vDraw()}catch(e){alert(e.message)}}
-function vEdit(pid,date){if(!can('vardiya'))return;const p=PE.find(x=>x.id===pid),o=OZ[pid+'|'+date],e=EK.find(x=>x.ad===p.ekip),def=e?rot(e,date):'HT',cv=o?o.tip:def;
-  const m=modal(`<h3>📅 ${esc(p.ad)} · ${dl(date)}</h3><div class="mu">Rotasyondaki varsayılan: ${SD[def].ad}</div><label>Vardiya / durum</label><select id="v_t">${Object.entries(SD).map(([k,s])=>`<option value="${k}" ${k===cv?'selected':''}>${s.ad}${s.saat?' · '+s.saat:''}</option>`).join('')}</select><label>Fazla mesai (saat)</label><input id="v_m" type="number" min="0" step="0.5" value="${o?.mesai||0}"><label>Not</label><input id="v_n" value="${esc(o?.notu||'')}"><div class="bar"><button class="pri" id="v_ok">Kaydet</button>${o?'<button id="v_r">Varsayılana dön</button>':''}<button class="r" id="v_x">Vazgeç</button></div>`);
+function vEdit(pid,date){if(!can('vardiya'))return;const p=PE.find(x=>x.id===pid),o=OZ[pid+'|'+date],e=EK.find(x=>x.ad===p.ekip),def=VR==='0'||!e?null:rot(e,date),cv=o?o.tip:(def||'V1');
+  const m=modal(`<h3>📅 ${esc(p.ad)} · ${dl(date)}</h3><div class="mu">${def?'Rotasyondaki varsayılan: '+SD[def].ad:'Bu gün için çizelge girilmemiş'}</div><label>Vardiya / durum</label><select id="v_t">${Object.entries(SD).map(([k,s])=>`<option value="${k}" ${k===cv?'selected':''}>${s.ad}${s.saat?' · '+s.saat:''}</option>`).join('')}</select><label>Fazla mesai (saat)</label><input id="v_m" type="number" min="0" step="0.5" value="${o?.mesai||0}"><label>Not</label><input id="v_n" value="${esc(o?.notu||'')}"><div class="bar"><button class="pri" id="v_ok">Kaydet</button>${o?'<button id="v_r">Kaydı kaldır</button>':''}<button class="r" id="v_x">Vazgeç</button></div>`);
   const q=s=>m.querySelector(s),done=async()=>{m.remove();try{await vload();vDraw()}catch(er){alert(er.message)}};
   q('#v_x').onclick=()=>m.remove();
   if(o)q('#v_r').onclick=async()=>{const {error}=await sb.from('vardiya_ozel').delete().eq('personel_id',pid).eq('tarih',date);error?alert(error.message):done()};
   q('#v_ok').onclick=async()=>{const t=q('#v_t').value,ms=parseFloat(q('#v_m').value)||0,nt=q('#v_n').value.trim()||null;
-    if(t===def&&!ms&&!nt){if(o){const {error}=await sb.from('vardiya_ozel').delete().eq('personel_id',pid).eq('tarih',date);if(error)return alert(error.message)}return done()}
+    if(def&&t===def&&!ms&&!nt){if(o){const {error}=await sb.from('vardiya_ozel').delete().eq('personel_id',pid).eq('tarih',date);if(error)return alert(error.message)}return done()}
     const {error}=await sb.from('vardiya_ozel').upsert({personel_id:pid,tarih:date,tip:t,mesai:ms,notu:nt});error?alert(error.message):done()}}
 function vExp(){const days=Array.from({length:14},(_,i)=>dstr(addD(weekStart(),i)));
-  const rows=EK.filter(e=>vF==='all'||e.ad===vF).flatMap(e=>PE.filter(p=>p.aktif&&p.ekip===e.ad).map(p=>{const r={Ekip:e.ad,Personel:p.ad,Görev:p.gorev};let ms=0;days.forEach(d=>{const t=eff(p,d),o=OZ[p.id+'|'+d];r[dl(d)]=SD[t].k+(o&&o.mesai>0?` (+${o.mesai})`:'');ms+=o?.mesai||0});r['Toplam mesai (sa)']=ms;return r}));
+  const rows=EK.filter(e=>vF==='all'||e.ad===vF).flatMap(e=>PE.filter(p=>p.aktif&&p.ekip===e.ad).map(p=>{const r={Ekip:e.ad,Personel:p.ad,Görev:p.gorev};let ms=0;days.forEach(d=>{const t=eff(p,d),o=OZ[p.id+'|'+d];r[dl(d)]=(t?SD[t].k:'')+(o&&o.mesai>0?` (+${o.mesai})`:'');ms+=o?.mesai||0});r['Toplam mesai (sa)']=ms;return r}));
   const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'vardiya');XLSX.writeFile(wb,`vardiya_${dstr(new Date())}.xlsx`)}
+// ----- Excel'den çizelge içe aktarma (Sheet1 düzeni: "tarihler ->" satırı + isim satırları, hücrelerde 8-16 / 16-24 / HAFTA TATİLİ / YILLIK İZİN) -----
+const nk=s=>String(s||'').toLocaleUpperCase('tr').replace(/İ/g,'I').replace(/Ş/g,'S').replace(/Ğ/g,'G').replace(/Ü/g,'U').replace(/Ö/g,'O').replace(/Ç/g,'C').replace(/\s+/g,' ').trim();
+function mapTip(v){const s=nk(v).replace(/\s/g,'');if(!s||/^\?+$/.test(s))return null;
+  const m=s.match(/^(\d{1,2})(?:[.:]00)?-(\d{1,2})(?:[.:]00)?$/);
+  if(m){const a=+m[1],b=+m[2];if(a===8&&b===16)return'V1';if(a===16&&(b===24||b===0))return'V2';if((a===0||a===24)&&b===8)return'V3';return null}
+  if(s.includes('HAFTATATIL'))return'HT';if(s.includes('IDARI'))return'IDARI';if(s.includes('IZIN'))return'YI';if(s.includes('RAPOR'))return'RAPOR';if(s.includes('EGITIM'))return'EGITIM';if(s.includes('RESMI'))return'RT';return null}
+const dd=v=>{if(v instanceof Date){const d=new Date(v.getTime()+12*36e5);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+  const m=/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(String(v).trim());return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null};
+function vImpPick(){const i=document.createElement('input');i.type='file';i.accept='.xlsx,.xls';i.onchange=async()=>{if(!i.files[0])return;try{await vImport(i.files[0])}catch(e){alert('İçe aktarılamadı: '+e.message)}};i.click()}
+async function vImport(f){const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}),ent=new Map();let atl=0;
+  wb.SheetNames.forEach(n=>{const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''});let hd=null;
+    rows.forEach(r=>{if(String(r[0]).toLocaleLowerCase('tr').includes('tarihler')){hd=r.map(dd);return}
+      const nm=nk(r[0]);if(!hd||!nm)return;r.forEach((v,c)=>{if(c<1||!hd[c]||v===''||v==null)return;const t=mapTip(v);if(!t){atl++;return}ent.set(nm+'|'+hd[c],{nm,tarih:hd[c],tip:t})})})});
+  if(!ent.size)return alert('Çizelge bulunamadı. Dosyada "tarihler ->" satırı ve altında isim satırları olmalı.');
+  await vload();const byN=Object.fromEntries(PE.map(p=>[nk(p.ad),p])),bil=[...new Set([...ent.values()].map(x=>x.nm).filter(x=>!byN[x]))];
+  if(bil.length){if(!confirm(`Listede olmayan kişiler: ${bil.join(', ')}.\nPersonel olarak eklensin mi? ("Diğer" ekibine eklenir)`))return;
+    if(!EK.some(e=>e.ad==='Diğer')){const {error}=await sb.from('ekipler').insert({ad:'Diğer',tur:'serbest',ofset:0,sira:90});if(error)return alert(error.message)}
+    const {error}=await sb.from('personel').insert(bil.map((x,i)=>({ad:x.toLocaleLowerCase('tr').replace(/(^|\s)\S/g,c=>c.toLocaleUpperCase('tr')),gorev:'Usta',ekip:'Diğer',sira:200+i})));if(error)return alert(error.message);await vload();PE.forEach(p=>byN[nk(p.ad)]=p)}
+  const rows=[...ent.values()].filter(x=>byN[x.nm]).map(x=>({personel_id:byN[x.nm].id,tarih:x.tarih,tip:x.tip}));
+  for(let i=0;i<rows.length;i+=300){const {error}=await sb.from('vardiya_ozel').upsert(rows.slice(i,i+300));if(error)return alert(error.message)}
+  alert(`${rows.length} günlük kayıt işlendi${atl?` (${atl} hücre tanınmadı, atlandı)`:''}.\nÇizelge girilmeyen günlerde rotasyon tahmini görünmesini istemiyorsanız Yönetim > Vardiya & Ekipler'den kapatın.`);
+  await vload();vDraw()}
 // -- yönetim: vardiya & ekipler
 async function vardV(m){await vload();const gor=['Formen','Usta','Mühendis','Diğer'];
   m.innerHTML=`<div class="card"><h3 style="margin-top:0">📅 Rotasyon Ayarı</h3><p class="mu">Vardiyalı ekipler 8 günlük döngüyle döner: 2 gün 08:00-16:00, 2 gün 16:00-24:00, 2 gün 00:00-08:00, 2 gün tatil. Her ekibin "başlangıç kaydırması" onun bu döngünün neresinde olduğunu belirler. Gerçek çizelge farklıysa tarihi ve kaydırmaları düzeltin. Tek günlük değişiklikler (izin, mesai, vardiya değişimi) Vardiya sayfasında hücreye tıklanarak yapılır.</p>
-  <div class="bar"><label class="ck">Döngü başlangıç tarihi</label><input id="va" type="date" value="${esc(VA)}"><button class="pri" onclick="vaSave()">Kaydet</button></div></div>
-  <div class="card" style="margin-top:14px"><h3 style="margin-top:0">👥 Ekipler</h3><div class="tw"><table><thead><tr><th>Ekip</th><th>Tür</th><th>Başlangıç kaydırması</th><th></th></tr></thead><tbody>${EK.map(e=>`<tr><td><b>${esc(e.ad)}</b></td><td>${e.tur==='gunduz'?'Gündüz (hafta içi 08:00-17:30)':'Vardiyalı'}</td><td>${e.tur==='gunduz'?'—':`<select data-a="${esc(e.ad)}" onchange="eUpd(this.dataset.a,'ofset',+this.value)">${[[0,'Başlangıç tarihinde 08:00-16:00'],[2,'Başlangıç tarihinde 16:00-24:00'],[4,'Başlangıç tarihinde 00:00-08:00'],[6,'Başlangıç tarihinde tatil']].map(([v,t])=>`<option value="${v}" ${v===e.ofset?'selected':''}>${t}</option>`).join('')}</select>`}</td><td><button class="r" data-a="${esc(e.ad)}" onclick="eDel(this.dataset.a)">✕</button></td></tr>`).join('')}</tbody></table></div>
-  <div class="bar"><input id="e_a" placeholder="Yeni ekip adı"><select id="e_t"><option value="vardiya">Vardiyalı</option><option value="gunduz">Gündüz</option></select><select id="e_o"><option value="0">08-16 ile başlar</option><option value="2">16-24 ile başlar</option><option value="4">00-08 ile başlar</option><option value="6">Tatille başlar</option></select><button class="pri" onclick="eAdd()">＋ Ekip Ekle</button></div></div>
+  <div class="bar"><label class="ck">Döngü başlangıç tarihi</label><input id="va" type="date" value="${esc(VA)}"><label class="ck"><input id="vr" type="checkbox" ${VR!=='0'?'checked':''}> Çizelge girilmemiş günlerde rotasyon tahminini göster</label><button class="pri" onclick="vaSave()">Kaydet</button></div></div>
+  <div class="card" style="margin-top:14px"><h3 style="margin-top:0">👥 Ekipler</h3><div class="tw"><table><thead><tr><th>Ekip</th><th>Tür</th><th>Başlangıç kaydırması</th><th></th></tr></thead><tbody>${EK.map(e=>`<tr><td><b>${esc(e.ad)}</b></td><td>${e.tur==='gunduz'?'Gündüz (hafta içi 08:00-17:30)':e.tur==='serbest'?'Serbest (rotasyonsuz)':'Vardiyalı'}</td><td>${e.tur!=='vardiya'?'—':`<select data-a="${esc(e.ad)}" onchange="eUpd(this.dataset.a,'ofset',+this.value)">${[[0,'Başlangıç tarihinde 08:00-16:00'],[2,'Başlangıç tarihinde 16:00-24:00'],[4,'Başlangıç tarihinde 00:00-08:00'],[6,'Başlangıç tarihinde tatil']].map(([v,t])=>`<option value="${v}" ${v===e.ofset?'selected':''}>${t}</option>`).join('')}</select>`}</td><td><button class="r" data-a="${esc(e.ad)}" onclick="eDel(this.dataset.a)">✕</button></td></tr>`).join('')}</tbody></table></div>
+  <div class="bar"><input id="e_a" placeholder="Yeni ekip adı"><select id="e_t"><option value="vardiya">Vardiyalı</option><option value="gunduz">Gündüz</option><option value="serbest">Serbest (rotasyonsuz)</option></select><select id="e_o"><option value="0">08-16 ile başlar</option><option value="2">16-24 ile başlar</option><option value="4">00-08 ile başlar</option><option value="6">Tatille başlar</option></select><button class="pri" onclick="eAdd()">＋ Ekip Ekle</button></div></div>
   <div class="card" style="margin-top:14px"><h3 style="margin-top:0">🧑‍🔧 Personel</h3><div class="bar"><input id="p_a" placeholder="Ad Soyad"><select id="p_g">${gor.map(g=>`<option>${g}</option>`).join('')}</select><select id="p_e">${EK.map(e=>`<option>${esc(e.ad)}</option>`).join('')}</select><button class="pri" onclick="pAdd()">＋ Personel Ekle</button></div>
   <div class="tw"><table><thead><tr><th>Ad</th><th>Görev</th><th>Ekip</th><th>Aktif</th><th></th></tr></thead><tbody>${PE.map(p=>`<tr><td><input value="${esc(p.ad)}" data-i="${p.id}" onchange="pUpd(this.dataset.i,'ad',this.value)"></td><td><select data-i="${p.id}" onchange="pUpd(this.dataset.i,'gorev',this.value)">${gor.map(g=>`<option ${g===p.gorev?'selected':''}>${g}</option>`).join('')}</select></td><td><select data-i="${p.id}" onchange="pUpd(this.dataset.i,'ekip',this.value)">${EK.map(e=>`<option ${e.ad===p.ekip?'selected':''}>${esc(e.ad)}</option>`).join('')}</select></td><td><label class="sw"><input type="checkbox" data-i="${p.id}" ${p.aktif?'checked':''} onchange="pUpd(this.dataset.i,'aktif',this.checked)"><i></i></label></td><td><button class="r" data-i="${p.id}" onclick="pDel(this.dataset.i)">✕</button></td></tr>`).join('')}</tbody></table></div></div>`}
-async function vaSave(){const {error}=await sb.from('ayarlar').upsert({anahtar:'vardiya_baslangic',deger:$('#va').value});alert(error?error.message:'Kaydedildi.')}
+async function vaSave(){const {error}=await sb.from('ayarlar').upsert([{anahtar:'vardiya_baslangic',deger:$('#va').value},{anahtar:'vardiya_rotasyon',deger:$('#vr').checked?'1':'0'}]);alert(error?error.message:'Kaydedildi.')}
 async function eUpd(ad,k,v){const {error}=await sb.from('ekipler').update({[k]:v}).eq('ad',ad);if(error)alert(error.message)}
 async function eAdd(){const ad=$('#e_a').value.trim();if(!ad)return;const {error}=await sb.from('ekipler').insert({ad,tur:$('#e_t').value,ofset:+$('#e_o').value,sira:Math.max(0,...EK.map(x=>x.sira))+10});error?alert(error.message):yonetView()}
 async function eDel(ad){if(!confirm(ad+' ekibi silinsin mi? Üyeleri ekipsiz kalır.'))return;const {error}=await sb.from('ekipler').delete().eq('ad',ad);error?alert(error.message):yonetView()}
