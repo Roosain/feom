@@ -87,7 +87,7 @@ tr.dt td{background:rgba(255,255,255,.03);animation:inn .25s}
 label.ck{display:flex;gap:6px;align-items:center;color:var(--tx);font-size:13px;margin:0}
 #rep{background:#fff;color:#000;padding:12px;border-radius:10px;overflow-x:auto}
 @media(max-width:768px){
-body{padding-bottom:calc(112px + env(safe-area-inset-bottom));font-size:15px}.vb::after{content:"MOBİL"}.wrap{padding:calc(8px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) 8px calc(8px + env(safe-area-inset-left))}
+body{padding-bottom:calc(150px + env(safe-area-inset-bottom));font-size:15px}.vb::after{content:"MOBİL"}.wrap{padding:calc(8px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) 8px calc(8px + env(safe-area-inset-left))}
 .logo{font-size:19px}.top{gap:6px}
 .wn{display:none}
 .mn{display:flex;position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:30;margin:0;padding:8px;gap:2px;border-radius:28px;background:rgba(12,16,28,.72);backdrop-filter:blur(24px) saturate(1.5);border:1px solid color-mix(in srgb,var(--c) 28%,transparent);box-shadow:0 14px 44px #000c,0 0 34px color-mix(in srgb,var(--c) 20%,transparent),inset 0 1px 0 rgba(255,255,255,.08)}
@@ -96,7 +96,7 @@ body{padding-bottom:calc(112px + env(safe-area-inset-bottom));font-size:15px}.vb
 .mn button.on{color:#0a1020;background:linear-gradient(135deg,var(--c),var(--c2));box-shadow:0 0 24px var(--g),0 8px 18px #0009;transform:translateY(-9px) scale(1.05)}
 .mn button:hover{transform:none}.mn button.on:hover{transform:translateY(-9px) scale(1.05)}
 .mn .bd{top:2px;right:8px}
-.swg{grid-template-columns:1fr}.vr{grid-template-columns:1fr}.mxg{grid-template-columns:120px repeat(14,50px)}.mxg2{grid-template-columns:120px repeat(42,28px)}
+.swg{grid-template-columns:1fr}.vr{grid-template-columns:1fr}.v3c{grid-template-columns:1fr}.swf{left:12px;right:12px;max-width:none;bottom:calc(88px + env(safe-area-inset-bottom));padding:8px 12px}.mxg{grid-template-columns:120px repeat(14,50px)}.mxg2{grid-template-columns:120px repeat(42,28px)}
 .acts{width:100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
 .sub{flex-wrap:nowrap;overflow-x:auto;padding:4px 2px 10px}
 .two{grid-template-columns:1fr}.fg{grid-template-columns:1fr}
@@ -137,7 +137,7 @@ tr.dim,.oc.dim{opacity:.6}
 .tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 8px;border-radius:18px;font-weight:600}
 .tile svg{width:30px;height:30px;color:var(--c)}
 .swg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}.swg:empty{display:none}
-.sw{border-color:color-mix(in srgb,var(--k) 55%,transparent);box-shadow:0 0 26px color-mix(in srgb,var(--k) 18%,transparent),0 10px 30px #0009}
+.swc{border-color:color-mix(in srgb,var(--k) 55%,transparent);box-shadow:0 0 26px color-mix(in srgb,var(--k) 18%,transparent),0 10px 30px #0009}
 .swt{display:flex;gap:8px;align-items:center;font-weight:700;margin-bottom:2px}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--k);box-shadow:0 0 10px var(--k);animation:pulse 1.8s infinite}
 .cd{font-size:12.5px;margin-bottom:6px;color:var(--k)}
@@ -166,6 +166,12 @@ tr.dim,.oc.dim{opacity:.6}
 .sc.x{background:color-mix(in srgb,var(--k) 30%,transparent);border:1px solid var(--k);font-weight:700}
 .sc.off{font-size:11px;font-weight:700;background:color-mix(in srgb,var(--k) 14%,#0b1220);border:1px solid color-mix(in srgb,var(--k) 40%,transparent);border-radius:8px}
 .mc{font-size:11px}
+.v3c{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+.vcol{border:1px solid color-mix(in srgb,var(--k) 38%,transparent);border-radius:14px;padding:10px;background:linear-gradient(180deg,color-mix(in srgb,var(--k) 9%,transparent),transparent)}
+.vch{margin-bottom:8px}.vch b{display:block;color:var(--k);font-size:15px}.vch span{font-size:12px}
+.vcol .tm{--k:var(--c);margin:6px 0}.vem{padding:14px 0;text-align:center}
+.swf{position:fixed;left:14px;bottom:14px;z-index:25;max-width:330px;padding:10px 14px;border-radius:16px;cursor:pointer;font-size:12.5px;line-height:1.45;background:rgba(12,16,28,.86);backdrop-filter:blur(16px);border:1px solid color-mix(in srgb,var(--ok) 55%,transparent);box-shadow:0 0 22px color-mix(in srgb,var(--ok) 25%,transparent),0 10px 30px #000a}
+.swf .dot{display:inline-block;margin-right:6px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important}}
 </style></head><body>
 <div class="safe"></div><div id="app" class="wrap"></div>
@@ -210,7 +216,7 @@ async function refs(){
   if(can('onay')){const {count}=await sb.from('profiles').select('id',{count:'exact',head:true}).eq('status','pending');pend=count||0}
 }
 function msgView(t,m){A.innerHTML=`<div class="card center view"><h2>${t}</h2><p class="mu">${m}</p><button onclick="out()">Çıkış</button> <button class="pri" onclick="boot()">Yenile</button></div>`}
-async function out(){await sb.auth.signOut();boot()}
+async function out(){document.getElementById('swf')?.remove();PE=[];EK=[];await sb.auth.signOut();boot()}
 function authView(reg){
   A.innerHTML=`<div class="card center view"><div class="logo" style="font-size:28px;margin-bottom:8px">⚡ FEOM TAKİP</div><div class="mu" style="margin-bottom:10px">Malzeme · Hizmet · Sipariş Takip Sistemi</div>
   ${reg?'<input id="n" placeholder="Ad Soyad" style="width:100%;margin:4px 0">':''}
@@ -243,6 +249,7 @@ function appView(){
   <nav class="nav mn">${MP.map(([k,t])=>`<button class="${k===tab?'on':''}" onclick="go('${k}')">${svg(k)}<span>${t}</span></button>`).join('')}<button class="${moreOn?'on':''}" onclick="moreSheet()">${svg('more')}<span>Menü</span>${pend&&yetkiY()?`<i class="bd">${pend}</i>`:''}</button></nav>
   <div id="sub" class="sub"></div><main id="main" class="view"></main>`;
   new MutationObserver(lab).observe($('#main'),{childList:true,subtree:true});
+  if(PE.length)sfRender();else vload().then(sfRender).catch(()=>{});
   ({ozet:ozetView,siparis:listView,hizmet:listView,vardiya:vardiyaView,gelen:gelenView,katalog:catView,rapor:repView,yonet:yonetView})[tab]();
 }
 const go=k=>{tab=k;sub='';appView()};
@@ -637,17 +644,22 @@ const left=m=>`${Math.floor(m/60)} sa ${m%60} dk`;
 const pp=(p,d)=>{const o=OZ[p.id+'|'+d];return `<div class="pp">${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}${o&&o.mesai>0?` <span class="pc">+${o.mesai} sa mesai</span>`:''}</div>`};
 function swHTML(){const c=cur(),now=grp(c.td,c.code),gnd=(c.h>=8&&c.h<17.5)?grp(c.td,'GUNDUZ'):[],nxt=grp(c.nd,c.nc),sum=a=>a.reduce((s,g)=>s+g.p.length,0);
   const tm=(g,d,t)=>`<div class="tm"><div class="tmh"><b>${esc(g.ekip)}${t||''}</b><span class="mu">${g.p.length} kişi</span></div>${g.p.map(p=>pp(p,d)).join('')}</div>`;
-  return `<div class="card sw" style="--k:var(--ok)"><div class="swt"><span class="dot"></span>Şu an vardiyada (${sum(now)+sum(gnd)}) · teslim edecek</div><div class="cd">${SD[c.code].saat} · vardiya değişimine ${left(c.left)} var</div>${now.map(g=>tm(g,c.td)).join('')||'<div class="mu">Bu vardiyada kimse yok / çizelge girilmemiş</div>'}${gnd.map(g=>tm(g,c.td,' · gündüz')).join('')}</div>
-  <div class="card sw" style="--k:var(--wa)"><div class="swt"><span class="dot"></span>Sıradaki vardiya (${sum(nxt)}) · devralacak</div><div class="cd">${dl(c.nd)} ${SD[c.nc].saat} · ${left(c.left)} sonra</div>${nxt.map(g=>tm(g,c.nd)).join('')||'<div class="mu">Bu vardiyada kimse yok / çizelge girilmemiş</div>'}</div>`}
-setInterval(()=>{const e=$('#sw');if(e&&PE.length)e.innerHTML=swHTML()},30000);
+  return `<div class="card swc" style="--k:var(--ok)"><div class="swt"><span class="dot"></span>Şu an vardiyada (${sum(now)+sum(gnd)}) · teslim edecek</div><div class="cd">${SD[c.code].saat} · vardiya değişimine ${left(c.left)} var</div>${now.map(g=>tm(g,c.td)).join('')||'<div class="mu">Bu vardiyada kimse yok / çizelge girilmemiş</div>'}${gnd.map(g=>tm(g,c.td,' · gündüz')).join('')}</div>
+  <div class="card swc" style="--k:var(--wa)"><div class="swt"><span class="dot"></span>Sıradaki vardiya (${sum(nxt)}) · devralacak</div><div class="cd">${dl(c.nd)} ${SD[c.nc].saat} · ${left(c.left)} sonra</div>${nxt.map(g=>tm(g,c.nd)).join('')||'<div class="mu">Bu vardiyada kimse yok / çizelge girilmemiş</div>'}</div>`}
+function sfRender(){let f=document.getElementById('swf');if(!me||!PE.length||!EK.length){f?.remove();return}
+  if(!f){f=document.createElement('div');f.id='swf';f.className='swf';f.onclick=swModal;document.body.appendChild(f)}
+  const c=cur(),nm=a=>a.map(g=>`${esc(g.ekip)} (${g.p.length})`).join(', ')||'girilmemiş',now=grp(c.td,c.code),gnd=(c.h>=8&&c.h<17.5)?grp(c.td,'GUNDUZ'):[],nxt=grp(c.nd,c.nc);
+  f.innerHTML=`<div><span class="dot" style="--k:var(--ok)"></span><b>Şu an</b> <span class="mu">${SD[c.code].saat.replace(':00','').replace(':00','')}</span> · ${nm(now.concat(gnd))}</div><div class="mu">→ ${SD[c.nc].saat.slice(0,5)} · ${left(c.left)} sonra: ${nm(nxt)}</div>`}
+function swModal(){const m=modal(`<h3>👷 Vardiya Durumu</h3><div class="swg" style="grid-template-columns:1fr;margin:0">${swHTML()}</div><div class="bar"><button class="pri" id="sm_g">📅 Çizelgeye git</button><button id="sm_x">Kapat</button></div>`);m.querySelector('#sm_x').onclick=()=>m.remove();m.querySelector('#sm_g').onclick=()=>{m.remove();go('vardiya')}}
+setInterval(()=>{const e=$('#sw');if(e&&PE.length)e.innerHTML=swHTML();sfRender()},30000);
 async function vardiyaView(){const m=$('#main');m.innerHTML='<div class="mu">Yükleniyor…</div>';
   try{await vload()}catch(e){return m.innerHTML=`<p class="warn">${esc(e.message)}</p>`}
-  $('#acts').innerHTML=`<button onclick="vExp()">📤 Excel'e Aktar</button>`+(can('vardiya')?`<button class="pri" onclick="vImpPick()">📥 Çizelge İçe Aktar</button><button onclick="yt='vardiya';go('yonet')">👥 Personel / Ekipler</button>`:'');vDraw()}
+  $('#acts').innerHTML=`<button onclick="vExpForm()">📤 Dışa Aktar</button>`+(can('vardiya')?`<button class="pri" onclick="vImpPick()">📥 İçe Aktar</button><button onclick="yt='vardiya';go('yonet')">👥 Personel / Ekipler</button>`:'');vDraw()}
 function dayCard(date){const d=new Date(date+'T12:00:00'),td=date===dstr(new Date());
   const chips=g=>g.p.map(p=>{const o=OZ[p.id+'|'+date];return `<span class="pcp ${can('vardiya')?'clk':''}" style="--k:${sd(eff(p,date)).c}" ${can('vardiya')?`onclick="vEdit('${p.id}','${date}')"`:''}>${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}${o&&o.mesai>0?` +${o.mesai}sa`:''}</span>`}).join('');
-  const rows=['V3','V1','V2'].map(c=>{const s=SD[c],g=grp(date,c,vF);return `<div class="vr" style="--k:${s.c}"><div class="vh"><b>${s.saat}</b><span class="mu">${s.ad}</span><div class="gb"><i style="left:${s.b/24*100}%;width:${(s.s-s.b)/24*100}%"></i></div></div><div class="vt">${g.map(x=>`<div class="tm"><div class="tmh"><b>${esc(x.ekip)}</b><span class="mu">${x.p.length} kişi</span></div><div class="vc">${chips(x)}</div></div>`).join('')||'<span class="mu">—</span>'}</div></div>`}).join('');
+  const cols=['V3','V1','V2'].map(c=>{const s=SD[c],g=grp(date,c,vF);return `<div class="vcol" style="--k:${s.c}"><div class="vch"><b>${s.saat}</b><span class="mu">${s.ad}</span><div class="gb"><i style="left:${s.b/24*100}%;width:${(s.s-s.b)/24*100}%"></i></div></div>${g.map(x=>`<div class="tm"><div class="tmh"><b>${esc(x.ekip)}</b><span class="mu">${x.p.length} kişi</span></div><div class="vc">${chips(x)}</div></div>`).join('')||'<div class="mu vem">Girilmemiş</div>'}</div>`}).join('');
   const other=['GUNDUZ','EGITIM','YI','RAPOR','IDARI','RT','HT'].map(c=>{const g=grp(date,c,vF);return g.length?`<div class="vo"><span class="led" style="color:${SD[c].c}">${SD[c].ad}</span>${g.map(chips).join('')}</div>`:''}).join('');
-  return `<div class="card vday ${td?'td':''}"><div class="vdh"><h3 style="margin:0">${GUN[d.getDay()]}</h3><span class="mu">${dl(date)}</span>${td?'<span class="led bekleyen">BUGÜN</span>':''}</div>${rows}${other}</div>`}
+  return `<div class="card vday ${td?'td':''}"><div class="vdh"><h3 style="margin:0">${GUN[d.getDay()]}</h3><span class="mu">${dl(date)}</span>${td?'<span class="led bekleyen">BUGÜN</span>':''}</div><div class="v3c">${cols}</div>${other}</div>`}
 const cellEv=(p,d)=>can('vardiya')?`onclick="vEdit('${p.id}','${d}')"`:'';
 function matrix(){const days=Array.from({length:14},(_,i)=>dstr(addD(weekStart(),i))),today=dstr(new Date());
   return `<div class="card" style="padding:8px"><div class="mxw"><div class="mxg"><div class="mh sticky" style="z-index:3">Personel</div>${days.map(d=>`<div class="mh ${d===today?'td':''}">${GUN[new Date(d+'T12:00:00').getDay()].slice(0,3)}<br>${new Date(d+'T12:00:00').getDate()}</div>`).join('')}${EK.filter(e=>vF==='all'||e.ad===vF).map(e=>`<div class="mt">${esc(e.ad)}</div>`+PE.filter(p=>p.ekip===e.ad&&p.aktif).map(p=>`<div class="mnm sticky">${p.gorev==='Formen'?'⭐ ':''}${esc(p.ad)}</div>`+days.map(d=>{const t=eff(p,d),o=OZ[p.id+'|'+d],z=sd(t);return `<div class="mc ${d===today?'td':''}" style="--k:${z.c}" ${cellEv(p,d)} title="${z.ad}${o&&o.mesai>0?' · +'+o.mesai+' sa mesai':''}">${z.k}${o&&o.mesai>0?'<sup>+</sup>':''}</div>`}).join('')).join('')).join('')}</div></div></div>`}
@@ -677,17 +689,41 @@ function vEdit(pid,date){if(!can('vardiya'))return;const p=PE.find(x=>x.id===pid
 function vExp(){const days=Array.from({length:14},(_,i)=>dstr(addD(weekStart(),i)));
   const rows=EK.filter(e=>vF==='all'||e.ad===vF).flatMap(e=>PE.filter(p=>p.aktif&&p.ekip===e.ad).map(p=>{const r={Ekip:e.ad,Personel:p.ad,Görev:p.gorev};let ms=0;days.forEach(d=>{const t=eff(p,d),o=OZ[p.id+'|'+d];r[dl(d)]=(t?SD[t].k:'')+(o&&o.mesai>0?` (+${o.mesai})`:'');ms+=o?.mesai||0});r['Toplam mesai (sa)']=ms;return r}));
   const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'vardiya');XLSX.writeFile(wb,`vardiya_${dstr(new Date())}.xlsx`)}
+
+function vExpForm(){const t=new Date();
+  const m=modal(`<h3>📤 Vardiya Çizelgesini Dışa Aktar</h3><div class="mu">Excel'inizdeki düzenle aynı: her ay ayrı blok ("tarihler ->" satırı, altında isimler). Aynı dosyayı <b>İçe Aktar</b> ile geri yükleyebilirsiniz. Fazla mesailer ayrı bir "Mesai" sayfasında gelir.</div>
+  <div class="fg"><div><label>Başlangıç tarihi</label><input id="x_b" type="date" value="${dstr(addD(t,-365))}"></div><div><label>Bitiş tarihi</label><input id="x_e" type="date" value="${dstr(t)}"></div></div>
+  <div class="bar"><button data-y="365">Son 1 yıl</button><button data-y="90">Son 3 ay</button><button data-y="-30">Önümüzdeki 30 gün (doldurulacak şablon)</button></div>
+  <label class="ck"><input id="x_r" type="checkbox"> Çizelgesi girilmemiş günleri rotasyon tahminiyle doldur</label>
+  <p id="x_m" class="mu"></p><div class="bar"><button class="pri" id="x_ok">📤 İndir (.xlsx)</button><button class="r" id="x_x">Kapat</button></div>`);
+  const q=s=>m.querySelector(s);
+  m.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>{const y=+b.dataset.y,n=new Date();if(y>0){q('#x_b').value=dstr(addD(n,-y));q('#x_e').value=dstr(n)}else{q('#x_b').value=dstr(n);q('#x_e').value=dstr(addD(n,-y))}});
+  q('#x_x').onclick=()=>m.remove();
+  q('#x_ok').onclick=async()=>{const b=q('#x_b').value,e=q('#x_e').value;if(!b||!e||b>e)return q('#x_m').textContent='Geçerli bir tarih aralığı seçin.';
+    if((Date.parse(e)-Date.parse(b))/864e5>800)return q('#x_m').textContent='En fazla yaklaşık 2 yıllık aralık seçin.';
+    q('#x_m').textContent='Hazırlanıyor…';try{await vExport(b,e,q('#x_r').checked);m.remove()}catch(er){q('#x_m').textContent=er.message}}}
+async function vExport(b,e,inc){if(!PE.length)await vload();const mp=await ozFetch(b,e);
+  const days=[];for(let d=new Date(b+'T12:00:00');dstr(d)<=e;d=addD(d,1))days.push(dstr(d));
+  const LB={V1:'8-16',V2:'16-24',V3:'0-8',GUNDUZ:'GÜNDÜZ',HT:'HAFTA TATİLİ',YI:'YILLIK İZİN',RAPOR:'RAPOR',EGITIM:'EĞİTİM',IDARI:'İDARİ İZİN',RT:'RESMİ TATİL'};
+  const people=EK.flatMap(x=>PE.filter(p=>p.aktif&&p.ekip===x.ad).map(p=>({p,e:x}))),rows=[],mons=[...new Set(days.map(d=>d.slice(0,7)))];
+  mons.forEach(mo=>{const md=days.filter(d=>d.startsWith(mo));rows.push([`${AY[+mo.slice(5)-1].toLocaleUpperCase('tr')} ${mo.slice(0,4)}`]);
+    rows.push(['tarihler ->','Ekip','Görev',...md.map(d=>d.split('-').reverse().join('.'))]);
+    people.forEach(({p,e:x})=>rows.push([p.ad.toLocaleUpperCase('tr'),x.ad,p.gorev,...md.map(d=>{const t=inc?eff(p,d,mp):mp[p.id+'|'+d]?.tip;return t?LB[t]:''})]));rows.push([])});
+  const ms=[['Personel','Tarih','Mesai (sa)','Not']];
+  people.forEach(({p})=>days.forEach(d=>{const o=mp[p.id+'|'+d];if(o&&(o.mesai>0||o.notu))ms.push([p.ad.toLocaleUpperCase('tr'),d.split('-').reverse().join('.'),o.mesai,o.notu||''])}));
+  const ws=XLSX.utils.aoa_to_sheet(rows),wb=XLSX.utils.book_new();ws['!cols']=[{wch:26},{wch:12},{wch:10},...Array(32).fill({wch:13})];
+  XLSX.utils.book_append_sheet(wb,ws,'Çizelge');XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ms),'Mesai');XLSX.writeFile(wb,`vardiya_${b}_${e}.xlsx`)}
 // ----- Excel'den çizelge içe aktarma (Sheet1 düzeni: "tarihler ->" satırı + isim satırları, hücrelerde 8-16 / 16-24 / HAFTA TATİLİ / YILLIK İZİN) -----
 const nk=s=>String(s||'').toLocaleUpperCase('tr').replace(/İ/g,'I').replace(/Ş/g,'S').replace(/Ğ/g,'G').replace(/Ü/g,'U').replace(/Ö/g,'O').replace(/Ç/g,'C').replace(/\s+/g,' ').trim();
 function mapTip(v){const s=nk(v).replace(/\s/g,'');if(!s||/^\?+$/.test(s))return null;
   const m=s.match(/^(\d{1,2})(?:[.:]00)?-(\d{1,2})(?:[.:]00)?$/);
   if(m){const a=+m[1],b=+m[2];if(a===8&&b===16)return'V1';if(a===16&&(b===24||b===0))return'V2';if((a===0||a===24)&&b===8)return'V3';return null}
-  if(s.includes('HAFTATATIL'))return'HT';if(s.includes('IDARI'))return'IDARI';if(s.includes('IZIN'))return'YI';if(s.includes('RAPOR'))return'RAPOR';if(s.includes('EGITIM'))return'EGITIM';if(s.includes('RESMI'))return'RT';return null}
+  if(s.includes('HAFTATATIL'))return'HT';if(s.includes('GUNDUZ'))return'GUNDUZ';if(s.includes('IDARI'))return'IDARI';if(s.includes('IZIN'))return'YI';if(s.includes('RAPOR'))return'RAPOR';if(s.includes('EGITIM'))return'EGITIM';if(s.includes('RESMI'))return'RT';return null}
 const dd=v=>{if(v instanceof Date){const d=new Date(v.getTime()+12*36e5);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
   const m=/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(String(v).trim());return m?`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`:null};
 function vImpPick(){const i=document.createElement('input');i.type='file';i.accept='.xlsx,.xls';i.onchange=async()=>{if(!i.files[0])return;try{await vImport(i.files[0])}catch(e){alert('İçe aktarılamadı: '+e.message)}};i.click()}
-async function vImport(f){const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}),ent=new Map();let atl=0;
-  wb.SheetNames.forEach(n=>{const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''});let hd=null;
+async function vImport(f){const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}),ent=new Map(),msl=[];let atl=0;
+  wb.SheetNames.forEach(n=>{if(nk(n)==='MESAI'){XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''}).slice(1).forEach(r=>{const d=dd(r[1])||(String(r[1]).match(/^\d{4}-\d{2}-\d{2}/)||[null])[0];if(r[0]&&d&&(parseFloat(r[2])>0||r[3]))msl.push({nm:nk(r[0]),tarih:d,mesai:parseFloat(r[2])||0,notu:String(r[3]||'')||null})});return}const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:''});let hd=null;
     rows.forEach(r=>{if(String(r[0]).toLocaleLowerCase('tr').includes('tarihler')){hd=r.map(dd);return}
       const nm=nk(r[0]);if(!hd||!nm)return;r.forEach((v,c)=>{if(c<1||!hd[c]||v===''||v==null)return;const t=mapTip(v);if(!t){atl++;return}ent.set(nm+'|'+hd[c],{nm,tarih:hd[c],tip:t})})})});
   if(!ent.size)return alert('Çizelge bulunamadı. Dosyada "tarihler ->" satırı ve altında isim satırları olmalı.');
@@ -695,8 +731,9 @@ async function vImport(f){const wb=XLSX.read(await f.arrayBuffer(),{type:'array'
   if(bil.length){if(!confirm(`Listede olmayan kişiler: ${bil.join(', ')}.\nPersonel olarak eklensin mi? ("Diğer" ekibine eklenir)`))return;
     if(!EK.some(e=>e.ad==='Diğer')){const {error}=await sb.from('ekipler').insert({ad:'Diğer',tur:'serbest',ofset:0,sira:90});if(error)return alert(error.message)}
     const {error}=await sb.from('personel').insert(bil.map((x,i)=>({ad:x.toLocaleLowerCase('tr').replace(/(^|\s)\S/g,c=>c.toLocaleUpperCase('tr')),gorev:'Usta',ekip:'Diğer',sira:200+i})));if(error)return alert(error.message);await vload();PE.forEach(p=>byN[nk(p.ad)]=p)}
-  const rows=[...ent.values()].filter(x=>byN[x.nm]).map(x=>({personel_id:byN[x.nm].id,tarih:x.tarih,tip:x.tip}));
-  for(let i=0;i<rows.length;i+=300){const {error}=await sb.from('vardiya_ozel').upsert(rows.slice(i,i+300));if(error)return alert(error.message)}
+  msl.forEach(x=>{const k=x.nm+'|'+x.tarih,e=ent.get(k);if(e){e.mesai=x.mesai;e.notu=x.notu}else{const p=byN[x.nm],t=p&&eff(p,x.tarih);if(t)ent.set(k,{nm:x.nm,tarih:x.tarih,tip:t,mesai:x.mesai,notu:x.notu})}});
+  const all=[...ent.values()].filter(x=>byN[x.nm]),A=all.filter(x=>x.mesai==null).map(x=>({personel_id:byN[x.nm].id,tarih:x.tarih,tip:x.tip})),B=all.filter(x=>x.mesai!=null).map(x=>({personel_id:byN[x.nm].id,tarih:x.tarih,tip:x.tip,mesai:x.mesai,notu:x.notu})),rows=[...A,...B];
+  for(const part of [A,B])for(let i=0;i<part.length;i+=300){const {error}=await sb.from('vardiya_ozel').upsert(part.slice(i,i+300));if(error)return alert(error.message)}
   alert(`${rows.length} günlük kayıt işlendi${atl?` (${atl} hücre tanınmadı, atlandı)`:''}.\nÇizelge girilmeyen günlerde rotasyon tahmini görünmesini istemiyorsanız Yönetim > Vardiya & Ekipler'den kapatın.`);
   await vload();vDraw()}
 // -- yönetim: vardiya & ekipler
