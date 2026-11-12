@@ -177,6 +177,32 @@ tr.dim,.oc.dim{opacity:.6}
 .hs{display:flex;gap:8px;flex-wrap:wrap}
 button.hc.on{border-color:var(--c);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 40%,#0b1220),color-mix(in srgb,var(--c2) 30%,#0b1220));box-shadow:0 0 14px var(--g)}
 .tvi{margin:10px 0;padding:12px}
+
+/* ===== 3D ışıklı tuş görünümü ===== */
+button{box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 -2px 0 rgba(0,0,0,.35),0 3px 0 color-mix(in srgb,var(--c) 24%,#04070d),0 6px 12px rgba(0,0,0,.45)}
+button:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -2px 0 rgba(0,0,0,.35),0 5px 0 color-mix(in srgb,var(--c) 30%,#04070d),0 10px 18px rgba(0,0,0,.55),0 0 18px var(--g)}
+button:active{transform:translateY(3px);box-shadow:inset 0 2px 6px rgba(0,0,0,.55),0 0 0 color-mix(in srgb,var(--c) 24%,#04070d),0 0 16px var(--g)}
+button.pri{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -3px 0 rgba(0,0,0,.28),0 4px 0 color-mix(in srgb,var(--c) 55%,#1a0f00),0 8px 16px rgba(0,0,0,.5),0 0 22px var(--g)}
+button.pri:active{transform:translateY(3px);box-shadow:inset 0 2px 6px rgba(0,0,0,.4),0 0 24px var(--c)}
+.nav button{border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 22%,#1a2338),#0d1526 75%)}
+.nav button.on{transform:translateY(3px);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 70%,#1a2338),color-mix(in srgb,var(--c2) 45%,#0d1526));box-shadow:inset 0 2px 6px rgba(0,0,0,.45),0 0 26px var(--c),0 0 4px var(--c)}
+.top{align-items:center}.top .pt{display:none;font-weight:800;font-size:17px;letter-spacing:.3px}
+.bk{padding:8px 10px;border-radius:12px}.bk svg,.mb svg{width:20px;height:20px;display:block}.mb{display:none;padding:9px 11px}
+.mt{font-weight:800;font-size:18px;text-align:center;margin-bottom:12px;background:linear-gradient(90deg,var(--c),var(--c2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tiles{perspective:800px}
+.tile{border-radius:20px;padding:20px 8px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 24%,#1b2540),#0d1526 80%);border:1px solid color-mix(in srgb,var(--c) 45%,#1b2438);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -3px 0 rgba(0,0,0,.4),0 6px 0 color-mix(in srgb,var(--c) 28%,#04070d),0 12px 22px rgba(0,0,0,.6),0 0 24px color-mix(in srgb,var(--c) 22%,transparent);transform:rotateX(8deg)}
+.tile:hover{transform:rotateX(0) translateY(-3px)}
+.tile.on{transform:rotateX(0) translateY(4px);background:linear-gradient(180deg,color-mix(in srgb,var(--c) 70%,#1b2540),color-mix(in srgb,var(--c2) 45%,#0d1526));box-shadow:inset 0 2px 6px rgba(0,0,0,.45),0 0 30px var(--c)}
+.tile.on svg{color:#fff}.tile svg{filter:drop-shadow(0 0 8px var(--c))}
+.sheet{justify-content:center}.sh{max-width:560px}
+@media(max-width:768px){
+.top{position:sticky;top:env(safe-area-inset-top);z-index:35;margin:0 -8px 4px;padding:8px 10px;background:rgba(6,10,19,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--g);gap:8px}
+.top .logo,.top .tb{display:none}.top .pt{display:inline}.mb{display:inline-flex}.bk{min-width:44px}
+.mn button{background:none;box-shadow:none}
+.mn button.on{background:linear-gradient(180deg,color-mix(in srgb,var(--c) 90%,#fff 10%),color-mix(in srgb,var(--c2) 80%,#000));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -3px 0 rgba(0,0,0,.3),0 5px 0 color-mix(in srgb,var(--c) 45%,#150a00),0 10px 20px #000a,0 0 26px var(--c);transform:translateY(-10px) scale(1.06)}
+.mn button.on:hover{transform:translateY(-10px) scale(1.06)}
+.mn button:active{transform:translateY(-4px) scale(1.02)}
+}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important}}
 </style></head><body>
 <div class="safe"></div><div id="app" class="wrap"></div>
@@ -212,7 +238,7 @@ async function boot(){
   if(!p.unvan)return msgView('🧩 Rolünüz henüz atanmadı','Yönetici rol atadığında sistemi açabileceksiniz.');
   if(p.unvan==='kurucu')P=Object.fromEntries(Object.keys(PERMS).map(k=>[k,true]));
   else{const {data:r}=await sb.from('roller').select('izinler').eq('ad',p.unvan).maybeSingle();P=r?.izinler||{}}
-  await refs();appView();
+  await refs();try{history.replaceState({t:tab},'')}catch(e){}appView();
   if(can('sil'))sb.rpc('otomatik_temizle').then(()=>{},()=>{});
 }
 async function refs(){
@@ -248,7 +274,8 @@ const yetkiY=()=>can('onay')||can('ayar')||can('sil')||can('vardiya');
 function appView(){
   const nv=[...NV];if(yetkiY())nv.push(['yonet','Yönetim']);
   const bd=k=>k==='yonet'&&pend?`<i class="bd">${pend}</i>`:'',moreOn=!MP.some(x=>x[0]===tab);
-  A.innerHTML=`<header class="top"><div class="logo">⚡ FEOM TAKİP</div><span class="sp"></span><div class="chip">👤 ${esc(me.full_name||me.email)} · <b>${esc(me.unvan)}</b></div><button onclick="tema()" title="Renk teması">🎨</button><button onclick="out()">Çıkış</button></header>
+  const ttl=(tab==='yonet'?'Yönetim':(NV.find(x=>x[0]===tab)||[0,''])[1]);
+  A.innerHTML=`<header class="top"><button class="bk" onclick="geri()" aria-label="Geri" style="${tab==='ozet'?'visibility:hidden':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><div class="logo">⚡ FEOM TAKİP</div><span class="pt">${ttl}</span><span class="sp"></span><div class="chip tb">👤 ${esc(me.full_name||me.email)} · <b>${esc(me.unvan)}</b></div><button class="tb" onclick="tema()" title="Renk teması">🎨</button><button class="tb" onclick="out()">Çıkış</button><button class="mb" onclick="moreSheet()" aria-label="Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></header>
   <div class="acts" id="acts"></div>
   <nav class="nav wn">${nv.map(([k,t])=>`<button class="${k===tab?'on':''}" onclick="go('${k}')"><span class="ic">${svg(k)}</span><span class="tx">${t}</span>${bd(k)}</button>`).join('')}</nav>
   <nav class="nav mn">${MP.map(([k,t])=>`<button class="${k===tab?'on':''}" onclick="go('${k}')">${svg(k)}<span>${t}</span></button>`).join('')}<button class="${moreOn?'on':''}" onclick="moreSheet()">${svg('more')}<span>Menü</span>${pend&&yetkiY()?`<i class="bd">${pend}</i>`:''}</button></nav>
@@ -257,13 +284,13 @@ function appView(){
   if(PE.length)sfRender();else vload().then(sfRender).catch(()=>{});
   ({ozet:ozetView,siparis:listView,hizmet:listView,vardiya:vardiyaView,gelen:gelenView,katalog:catView,rapor:repView,yonet:yonetView})[tab]();
 }
-const go=k=>{tab=k;sub='';appView()};
-function moreSheet(){const t=[['gelen','Gelen Ürünler'],['katalog','Malzeme Kataloğu'],['rapor','Güncel Rapor']];if(yetkiY())t.push(['yonet','Yönetim']);
+const go=k=>{tab=k;sub='';try{history.pushState({t:k},'')}catch(e){}appView()};
+window.addEventListener('popstate',e=>{if(!me)return;tab=(e.state&&e.state.t)||'ozet';sub='';appView()});
+function geri(){if(tab!=='ozet'&&history.state&&history.state.t&&history.length>1)history.back();else go('ozet')}
+function moreSheet(){const t=[['ozet','Özet'],['siparis','Siparişler'],['hizmet','Hizmetler'],['vardiya','Vardiya'],['gelen','Gelen Ürünler'],['katalog','Katalog & Fotoğraf'],['rapor','Güncel Rapor']];if(yetkiY())t.push(['yonet','Yönetim']);
   const s=document.createElement('div');s.className='sheet';
-  s.innerHTML=`<div class="sh"><div class="gr"></div><div class="tiles">${t.map(([k,l])=>`<button class="tile" data-k="${k}">${svg(k)}<span>${l}</span></button>`).join('')}</div><div class="bar"><button data-a="tema">🎨 Renk teması</button><button class="r" data-a="out">Çıkış</button></div></div>`;
+  s.innerHTML=`<div class="sh"><div class="gr"></div><div class="mt">☰ Menü</div><div class="tiles">${t.map(([k,l])=>`<button class="tile ${k===tab?'on':''}" data-k="${k}">${svg(k)}<span>${l}</span></button>`).join('')}</div><div class="bar" style="justify-content:center"><button data-a="tema">🎨 Renk teması</button><button class="r" data-a="out">Çıkış</button></div></div>`;
   s.onclick=e=>{const b=e.target.closest('button');if(b){s.remove();if(b.dataset.k)go(b.dataset.k);else if(b.dataset.a==='tema')tema();else out();return}if(e.target===s)s.remove()};document.body.appendChild(s)}
-function lab(){document.querySelectorAll('#main table').forEach(t=>{const hd=[...t.querySelectorAll('thead th')].map(x=>x.textContent);if(!hd.length)return;
-  t.querySelectorAll('tbody tr').forEach(r=>[...r.children].forEach((c,i)=>{if(c.tagName==='TD'&&!c.dataset.l)c.dataset.l=hd[i]||''}))})}
 
 // ---------- ÖZET ----------
 function cnt(el){const t=+el.dataset.v,s=performance.now(),f=n=>{const p=Math.min(1,(n-s)/900);el.textContent=Math.round(t*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
@@ -347,7 +374,7 @@ function stg(r){if(r.durum==='iptal')return `<span class="chip2" style="--k:var(
   return `<div class="stg" style="--k:${k}">${L.map((t,i)=>`<div class="stp ${s>=i+1?'d':''} ${i+1===Math.ceil(s)&&s<4?'a':''}"><i></i>${t}</div>`).join('')}</div><div class="pb" style="--k:${k}"><b style="width:${Math.min(100,g/mk*100)}%"></b></div><div class="mu" style="font-size:12px;margin-top:3px">${g} / ${mk} adet</div>`}
 const chip=r=>`<span class="chip2" style="--k:${SC[r.durum]}">${{bekleyen:'⏳',kismi:'🧩',gelen:'✅',iptal:'✕',eksik:'⚠'}[r.durum]} ${{bekleyen:tab==='hizmet'?'Hizmette':'Bekliyor',kismi:'Kısmi geldi',gelen:tab==='hizmet'?'Geri geldi':'Tamamı geldi',iptal:'İptal',eksik:'Eksik bilgi'}[r.durum]}</span>`;
 const wr=r=>eks(r)?`<div style="margin-top:6px">${can('yaz')?`<a href="#" class="chip2" style="--k:#fb923c" onclick="kayitForm(${r.id});return false">⚠ ${!r.tamir_km?'KM kodu ekle':'Seri no ekle'}</a>`:`<span class="chip2" style="--k:#fb923c">⚠ ${!r.tamir_km?'KM kodu':'Seri no'} eksik</span>`}</div>`:(r.seri_no?`<div class="mu" style="margin-top:6px">Seri: ${esc(r.seri_no)}</div>`:'');
-const btns=r=>`${can('teslim')&&r.durum!=='iptal'?`<button class="pri" onclick="teslim(${r.id})">📦 Teslim Al</button>`:''}<button onclick="detay(${r.id},this)">📄 Detay</button>${can('yaz')?`<button onclick="kayitForm(${r.id})" title="Düzenle">✏️</button>`:''}${can('sil')?`<button class="r" onclick="del(${r.id})" title="Sil">✕</button>`:''}`;
+const btns=r=>`${can('teslim')&&r.durum!=='iptal'?`<button class="pri" onclick="teslim(${r.id})">📦 Teslim Al</button>`:''}<button onclick="detay(${r.id},this)">📄 Detay</button>${can('foto')?`<button onclick="fotoEkle(${r.id})" title="Fotoğraf ekle">📷</button>`:''}${can('yaz')?`<button onclick="kayitForm(${r.id})" title="Düzenle">✏️</button>`:''}${can('sil')?`<button class="r" onclick="del(${r.id})" title="Sil">✕</button>`:''}`;
 const who=r=>r.talep_eden?`<div class="mu">👤 ${esc(kn(r.talep_eden))}</div>`:'';
 const row=r=>`<tr class="${r.durum==='iptal'?'dim':''}"><td><b>${esc(r.talep_no)}</b><div class="mu">${esc(r.km_kodu)}</div></td>
 <td><div><b>${esc(r.tanim2||r.tanim)}</b></div><div class="mu">${esc(r.tanim2?r.tanim:'')}</div><div class="mu">${esc(r.kullanim)}</div>${who(r)}</td>
@@ -413,7 +440,7 @@ async function detay(id,b){const tr=b.closest('tr')||b.closest('.oc'),nx=tr.next
   const F=[['Talep eden',r.talep_eden&&kn(r.talep_eden)],['Tamire giden KM',r.tamir_km],['Satınalmacı',r.satinalmaci],['Tedarikçi',r.tedarikci],['Talep tarihi',r.talep_tarihi],['Termin tarihi',r.termin_tarihi],['İlk teslim tarihi',r.ilk_teslim_tarihi],['Söz verilen teslim',r.soz_teslim_tarihi],['K/D tarihi',r.kd_tarihi],['İptal tarihi',r.iptal_tarihi],
    ['Masraf merkezi',[r.masraf_merkezi,r.masraf_merkezi_adi].filter(Boolean).join(' · ')],['Masraf tipi',[r.masraf_tipi_kod,r.masraf_tipi].filter(Boolean).join(' · ')],['Satın alma no',r.stn_alm_no],['Onay rotası',r.onay_rotasi],['Sevk adresi',r.sevk_adresi],['Talep tipi',r.talep_tipi],['Birim',r.birim],['Grup',r.grup],['Proje kodu',r.proje_kodu],['Birim maliyet',r.birim_maliyet],['İlk sipariş tutarı',r.tutar],['Son durum (JDE)',r.son_durum],['Açıklama',r.aciklama],['Not',r.notu]].filter(([,v])=>v!==null&&v!==undefined&&String(v).trim()!=='');
   const isT=tr.tagName==='TR',d=document.createElement(isT?'tr':'div');d.className='dt';
-  d.innerHTML=(isT?'<td colspan="20">':'<div class="card" style="margin:-4px 0 12px">')+`<div class="dg">${F.map(([k,v])=>`<div><span>${k}</span>${esc(v)}</div>`).join('')}</div><h4 style="margin:14px 0 4px">📅 Teslimatlar</h4>${l.length?l.map(x=>`<div class="l"><b>${x.tarih}</b><span>${x.adet} adet</span><span class="led h_${x.hedef}">${HL[x.hedef]}</span><span class="mu">${esc(x.notu)}</span>${x.kabul_eden?`<span class="mu">Kabul: ${esc(x.kabul_eden)}</span>`:''}${x.tutanak_id?`<button onclick="tutAc(${x.tutanak_id})">📄 Tutanak</button>`:''}${can('sil')?`<button class="r" onclick="drc(${x.id},${id})">Sil</button>`:''}</div>`).join(''):'<span class="mu">Henüz teslimat yok</span>'}`+(isT?'</td>':'</div>');tr.after(d)}
+  d.innerHTML=(isT?'<td colspan="20">':'<div class="card" style="margin:-4px 0 12px">')+`<div class="dg">${F.map(([k,v])=>`<div><span>${k}</span>${esc(v)}</div>`).join('')}</div><h4 style="margin:14px 0 4px">📅 Teslimatlar</h4>${l.length?l.map(x=>`<div class="l"><b>${x.tarih}</b><span>${x.adet} adet</span><span class="led h_${x.hedef}">${HL[x.hedef]}</span><span class="mu">${esc(x.notu)}</span>${x.kabul_eden?`<span class="mu">Kabul: ${esc(x.kabul_eden)}</span>`:''}${x.tutanak_id?`<button onclick="tutAc(${x.tutanak_id})">📄 Tutanak</button>`:''}${can('sil')?`<button class="r" onclick="drc(${x.id},${id})">Sil</button>`:''}</div>`).join(''):'<span class="mu">Henüz teslimat yok</span>'}`+(isT?'</td>':'</div>');tr.after(d);dfoto(d,r)}
 async function drc(rid,oid){if(!confirm('Bu teslimat kaydı silinsin mi?'))return;const {error}=await sb.from('receipts').delete().eq('id',rid);if(error)return alert(error.message);await yen(oid)}
 
 // ----- Excel içe aktarma -----
@@ -441,6 +468,15 @@ async function imp(files){
   const all=[...map.values()],isI=o=>o.son_durum==='980'||!!o.iptal_tarihi,iptal=all.filter(isI).map(o=>({...o,durum:'iptal'})),diger=all.filter(o=>!isI(o));
   let err=null;for(const part of [diger,iptal]){for(let k=0;k<part.length;k+=300){const {error}=await sb.from('orders').upsert(part.slice(k,k+300),{onConflict:'talep_no,km_kodu'});if(error){err=error;break}}}
   alert(err?'Hata: '+err.message:`${all.length} kayıt işlendi (yeni olanlar eklendi, var olanlar güncellendi).`);listView()}
+
+// ---------- FOTOĞRAF (sipariş/hizmet satırından) ----------
+function fotoEkle(id){const r=data.find(x=>x.id===id),km=r.tip==='hizmet'?r.tamir_km:r.km_kodu;
+  if(!km||!/^KM/i.test(km))return alert('Fotoğraf KM kodlu malzemeye eklenir.'+(r.tip==='hizmet'?'\nÖnce ✏️ ile "Tamire giden malzemenin KM kodu"nu girin.':''));up(km)}
+async function dfoto(d,r){const km=r.tip==='hizmet'?r.tamir_km:r.km_kodu,ok=km&&/^KM/i.test(km),host=d.querySelector('td,.card'),box=document.createElement('div');if(!host)return;
+  box.innerHTML=`<h4 style="margin:14px 0 4px">📷 Fotoğraflar${ok?` <span class="mu">(${esc(km)})</span>`:''}</h4><div class="ph"><span class="mu">${ok?'Yükleniyor…':''}</span></div>${can('foto')&&ok?`<div class="bar"><button class="pri" onclick="fotoEkle(${r.id})">📷 Fotoğraf Ekle</button></div>`:''}${ok?'':`<div class="mu">Fotoğraf KM kodlu malzemeye eklenir${r.tip==='hizmet'?' (✏️ ile "Tamire giden malzemenin KM kodu"nu girin)':''}.</div>`}`;host.appendChild(box);
+  if(!ok)return;const {data:p}=await sb.from('photos').select('path').eq('km_kodu',km).limit(8),ph=box.querySelector('.ph');
+  if(!p?.length){ph.innerHTML='<span class="mu">Henüz fotoğraf yok</span>';return}
+  const {data:u}=await sb.storage.from('photos').createSignedUrls(p.map(x=>x.path),3600);ph.innerHTML=(u||[]).map(x=>`<a href="${x.signedUrl}" target="_blank"><img src="${x.signedUrl}"></a>`).join('')}
 
 // ---------- İSTEKLER ----------
 async function kmLoad(){if(kmC)return;const l=await pg(()=>sb.from('materials').select('km_kodu,tanim,tanim2').order('km_kodu'));kmC=Object.fromEntries(l.filter(x=>/^KM/i.test(x.km_kodu)).map(x=>[x.km_kodu,x]))}
@@ -483,7 +519,7 @@ async function istekRed(id){const n=prompt('Reddetme nedeni (isteğe bağlı):')
 async function istekSil(id){const x=IS.find(r=>r.id===id);if(!confirm('Bu istek silinsin mi?'))return;
   if(x.durum!=='dondu'&&x.foto?.length)await sb.storage.from('photos').remove(x.foto);
   const {error}=await sb.from('istekler').delete().eq('id',id);error?alert(error.message):listView()}
-function goIstek(){tab='siparis';try{const k='feom_f_siparis',f=JSON.parse(localStorage.getItem(k)||'{}');f.sub='istek';localStorage.setItem(k,JSON.stringify(f))}catch(e){}appView()}
+function goIstek(){try{const k='feom_f_siparis',f=JSON.parse(localStorage.getItem(k)||'{}');f.sub='istek';localStorage.setItem(k,JSON.stringify(f))}catch(e){}go('siparis')}
 
 // ---------- KABUL TUTANAĞI (Ön Malzeme Giriş Kontrol Formu) ----------
 const qn=v=>{if(v==null||v==='')return null;if(typeof v==='number')return Math.round(v);let s=String(v).replace(/[^\d.,-]/g,'');if(!s)return null;if(s.includes(',')&&s.includes('.'))s=s.replace(/\./g,'').replace(',','.');else if(s.includes(','))s=s.replace(',','.');const n=parseFloat(s);return isNaN(n)?null:Math.round(n)};
@@ -688,7 +724,7 @@ function cdraw(){const q=($('#q')?.value||'').toLowerCase(),cnt=t=>catM.filter(x
   $('#g').innerHTML=v.slice(0,120).map(x=>{const o=openM[x.km_kodu]||[],s=o.filter(i=>i.tip==='siparis'),h=o.filter(i=>i.tip==='hizmet');
     return `<div class="card cat ${o.length?'act':''}"><b>${esc(x.km_kodu)}</b><div>${esc(x.tanim)}</div><div class="mu">${esc(x.tanim2)}</div>
     <div>${s.length?`<button class="bdg" style="--k:var(--c)" onclick="tgl('${esc(x.km_kodu)}','siparis')">🛒 Siparişte ×${s.length}</button>`:''}${h.length?`<button class="bdg" style="--k:var(--c2)" onclick="tgl('${esc(x.km_kodu)}','hizmet')">🛠 Hizmette ×${h.length}</button>`:''}</div>
-    <div class="ex" id="ex_${esc(x.km_kodu)}"></div><div class="bar"><button onclick="photos('${esc(x.km_kodu)}')">🖼 Fotoğraflar</button>${can('foto')?`<button onclick="up('${esc(x.km_kodu)}')">＋ Fotoğraf</button>`:''}</div><div class="ph" id="p_${esc(x.km_kodu)}"></div></div>`}).join('')||'<span class="mu">Sonuç yok</span>'}
+    <div class="ex" id="ex_${esc(x.km_kodu)}"></div><div class="bar"><button onclick="photos('${esc(x.km_kodu)}')">🖼 Fotoğraflar</button>${can('foto')?`<button class="pri" onclick="up('${esc(x.km_kodu)}')">📷 Fotoğraf Ekle</button>`:''}</div><div class="ph" id="p_${esc(x.km_kodu)}"></div></div>`}).join('')||'<span class="mu">Sonuç yok</span>'}
 function tgl(km,tip){const el=document.getElementById('ex_'+km),k=km+tip;if(el.dataset.o===k){el.innerHTML='';el.dataset.o='';return}el.dataset.o=k;
   el.innerHTML=(openM[km]||[]).filter(o=>o.tip===tip).map(o=>`<div class="li"><b>${esc(o.talep_no)}</b><span>${o.gelen_adet||0} / ${o.miktar} adet</span><span class="mu">${o.talep_tarihi||''}</span><span class="led ${o.durum}">${SL[o.durum]}</span></div>`).join('')}
 async function photos(km){const el=document.getElementById('p_'+km),{data:p}=await sb.from('photos').select('id,path').eq('km_kodu',km);
@@ -702,7 +738,7 @@ function up(km){const i=document.createElement('input');i.type='file';i.accept='
   for(const f of i.files){const b=await sikistir(f),path=`${km}/${Date.now()}_${Math.random().toString(36).slice(2,6)}.jpg`;
     const a=await sb.storage.from('photos').upload(path,b,{contentType:'image/jpeg'});if(a.error){alert(a.error.message);return}
     const {error}=await sb.from('photos').insert({km_kodu:km,path});if(error){alert(error.message);return}}
-  photos(km)};i.click()}
+  if(document.getElementById('p_'+km))photos(km);else alert('✅ Fotoğraflar eklendi. Malzeme Kataloğu > '+km+' kartında görebilirsiniz.')};i.click()}
 
 // ---------- GÜNCEL RAPOR ----------
 async function repView(){
